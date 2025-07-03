@@ -1,4 +1,3 @@
-import ssl, smtplib
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -11,7 +10,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "j9k*spule$g6&dnpf26w@l*jkelj&dhvhry
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["social-media-dashboard-f5bw.onrender.com", "localhost", "127.0.0.1"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -62,6 +61,13 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://social-media-dashboard-f5bw.onrender.com"
+]
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -117,3 +123,20 @@ TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 
 EMAIL_VERIFICATION_API_KEY = os.getenv("EMAIL_VERIFICATION_API_KEY")
 EMAIL_VERIFICATION_API_URL = os.getenv("EMAIL_VERIFICATION_API_URL")
+
+import logging
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
