@@ -1,0 +1,670 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Profile Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #e1306c 0%, #0077b5 100%);
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 25px;
+            width: 100%;
+            max-width: 85rem;
+            min-height: fit-content;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 2rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="file"],
+        input[type="tel"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="password"]:focus {
+            border-color: #e1306c;
+            box-shadow: 0 0 8px rgba(225, 48, 108, 0.4);
+            outline: none;
+        }
+
+        input[type="file"] {
+            border: none;
+        }
+
+        .email-verification {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .verify-button {
+            background: linear-gradient(135deg, #4D9CFF, #8A2BE2);
+            padding: 8px 14px;
+            font-size: 13px;
+            border-radius: 8px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.4s, transform 0.2s;
+        }
+
+        .verify-button:hover {
+            background: linear-gradient(135deg, #377dd1, #6A1AB2);
+            transform: translateY(-2px);
+        }
+
+        button[type="submit"] {
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3b5998, #1d2f6f);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.4s, transform 0.2s;
+        }
+
+        button[type="submit"]:hover {
+            background: linear-gradient(135deg, #314d86, #152959);
+            transform: translateY(-2px);
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 14px;
+            background: linear-gradient(135deg, #0077b5, #005582);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 10px;
+            text-align: center;
+            transition: background 0.4s, transform 0.2s;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #006ba0, #00496a);
+            transform: translateY(-2px);
+        }
+
+        .check-status,
+        .small-note {
+            font-size: 13px;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .social-links a {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            background: #f2f2f2;
+            padding: 14px;
+            border-radius: 12px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .social-links a i {
+            margin-right: 8px;
+            font-size: 1.1em;
+            vertical-align: middle;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-3px);
+            background: #eee;
+        }
+
+        .tooltip-wrapper {
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+
+        .tooltip-wrapper svg {
+            width: 18px;
+            height: 18px;
+            fill: #999;
+            transition: fill 0.3s ease;
+        }
+
+        .tooltip-wrapper:hover svg {
+            fill: #e1306c;
+        }
+
+        .tooltip-box {
+            display: none;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tooltip-wrapper:hover .tooltip-box {
+            display: block;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .form-row>div {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media screen and (max-width: 1024px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            body {
+                height: auto;
+                min-height: 100vh;
+                overflow-y: auto;
+            }
+
+            .container {
+                padding: 1rem;
+                border-radius: 16px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .email-verification {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .email-verification input,
+            .email-verification button {
+                width: 100%;
+            }
+
+            .profile-pic-container>div {
+                flex-direction: column;
+                align-items: start !important;
+                gap: 10px;
+            }
+
+            .profile-preview img {
+                width: 60px;
+                height: 60px;
+                align-self: flex-start;
+            }
+
+            .social-links {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .social-links a {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+
+            .tooltip-box {
+                width: 100%;
+                left: 0;
+                transform: none;
+            }
+        }
+
+        .profile-preview img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ccc;
+            transition: transform 0.3s;
+        }
+
+        .profile-preview img:hover {
+            transform: scale(1.05);
+        }
+
+        .top-message {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: #e0f7e9;
+            color: #2e7d32;
+            padding: 14px 30px;
+            border-radius: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            font-size: 17px;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+
+        .top-message.error {
+            background: #fdecea;
+            color: #b71c1c;
+        }
+
+        .top-message.info {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .top-message.show {
+            top: 30px;
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        .fade-in-delayed-1 {
+            animation-delay: 0.2s;
+        }
+
+        .fade-in-delayed-2 {
+            animation-delay: 0.4s;
+        }
+
+        .fade-in-delayed-3 {
+            animation-delay: 0.6s;
+        }
+
+        .fade-in-delayed-4 {
+            animation-delay: 0.8s;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container fade-in fade-in-delayed-1">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="top-message{% if message.tags %} {{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <h2 class="fade-in fade-in-delayed-2">Manage Your Profile</h2>
+        <form method="POST" enctype="multipart/form-data" class="fade-in fade-in-delayed-3">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div>
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" value="{{ request.user.username }}">
+                    <div id="username-status" class="check-status"></div>
+                </div>
+                <div class="profile-pic-container">
+                    <label for="profile_pic">Profile Picture</label>
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <input type="file" name="profile_pic" id="profile_pic" accept="image/*">
+                        <div class="profile-preview">
+                            <img id="profilePreviewImg"
+                                src="{% if profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}{% static 'default-profile.png' %}{% endif %}"
+                                alt="Profile Preview">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="email">New Email</label>
+                    <div class="email-verification">
+                        <input type="email" name="email" id="email" value="{{ request.user.email }}">
+                        <button type="button" class="verify-button" onclick="sendVerificationEmail()">Verify</button>
+                    </div>
+                    <p class="small-note">Click verify to receive a verification link on the new email.</p>
+                </div>
+                <div>
+                    <label for="otp_phone">Phone Number</label>
+                    <div class="email-verification">
+                        <input type="tel" name="otp_phone" id="otp_phone" value="{{ request.user.profile.phone }}">
+                        <button type="button" class="verify-button" onclick="sendOtp()">Send OTP</button>
+                    </div>
+                    <p class="small-note">An OTP will be sent to your phone number.</p>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="otp_code">Enter OTP</label>
+                    <div class="email-verification">
+                        <input type="text" id="otp_code" name="otp_code" placeholder="Enter OTP" maxlength="6" disabled>
+                        <button type="button" class="verify-button" onclick="verifyOtp()" id="verifyOtpBtn"
+                            style="display: none;">
+                            Verify OTP
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label for="new_password">New Password
+                        <span class="tooltip-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+                                <path
+                                    d="M25 2C12.3 2 2 12.3 2 25s10.3 23 23 23 23-10.3 23-23S37.7 2 25 2zm0 2c11.6 0 21 9.4 21 21s-9.4 21-21 21S4 36.6 4 25 13.4 4 25 4zm0 7a3 3 0 100 6 3 3 0 000-6zm-4 10v2h1v13h-1v2h8v-2h-1V23h-6z">
+                                </path>
+                            </svg>
+                            <span class="tooltip-box">Must include 1 uppercase, 1 number & 1 special character.</span>
+                        </span>
+                    </label>
+                    <div class="email-verification">
+                        <input type="password" name="new_password" id="new_password" placeholder="Enter new password"
+                            disabled>
+                        <button type="button" class="verify-button" onclick="changePassword()" id="changePasswordBtn"
+                            disabled>Change</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="social-links fade-in fade-in-delayed-4">
+                <a href="{% url 'youtube_auth_start' %}"
+                    style="background: #FF0000; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+                    <i class="fab fa-youtube"></i> Link YouTube
+                </a>
+                <a href="{% url 'reddit_auth_start' %}"
+                    style="background: #FF4500; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+                    <i class="fab fa-reddit-alien"></i> Link Reddit
+                </a>
+                <a href="{% url 'twitter_login' %}"
+                    style="background: #1DA1F2; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+                    <i class="fab fa-twitter"></i> Link Twitter
+                </a>
+                <a href="{% url 'linkedin_auth_start' %}"
+                    style="background: #0077b5; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+                    <i class="fab fa-linkedin-in"></i> Link LinkedIn
+                </a>
+            </div>
+
+            <button type="submit" class="fade-in fade-in-delayed-4">Save Changes</button>
+            <a href="/" class="back-button fade-in fade-in-delayed-4">← Back to Dashboard</a>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const usernameInput = document.getElementById("username");
+            const usernameStatus = document.getElementById("username-status");
+
+            usernameInput.addEventListener("input", () => {
+                const username = usernameInput.value;
+                if (username.length > 2) {
+                    fetch(`/check-username/?username=${encodeURIComponent(username)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            usernameStatus.textContent = data.exists
+                                ? "❌ Username already taken"
+                                : "✅ Username available";
+                            usernameStatus.style.color = data.exists ? "red" : "green";
+                        });
+                } else {
+                    usernameStatus.textContent = "";
+                }
+            });
+        });
+
+        function checkUsernameAvailability() {
+            const username = document.getElementById('username').value;
+            const status = document.getElementById('username-status');
+            if (username.length < 3) {
+                status.textContent = "";
+                return;
+            }
+            fetch(`/check_username?username=${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    status.textContent = data.exists ? "Username not available" : "Username available";
+                    status.style.color = data.exists ? "red" : "green";
+                });
+        }
+
+        function sendVerificationEmail() {
+            const email = document.getElementById('email').value;
+            if (!email || !email.includes("@")) {
+                alert("Please enter a valid email.");
+                return;
+            }
+            fetch(`/send_verification_email/?email=${email}`)
+                .then(response => response.json())
+                .then(() => {
+                    alert("Check your email to verify your new address.");
+                });
+        }
+
+        function sendOtp() {
+            const phone = document.getElementById('otp_phone').value;
+            if (!phone || phone.length !== 10 || !/^\d{10}$/.test(phone)) {
+                alert("Please enter a valid 10-digit phone number.");
+                return;
+            }
+            fetch(`/send-otp/?phone=${phone}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status.includes("sent")) {
+                        alert("OTP sent successfully to your phone.");
+                        document.getElementById('otp_code').disabled = false;
+                        document.getElementById('verifyOtpBtn').style.display = 'inline-block';
+                    } else if (data.status === "wait") {
+                        alert("Please wait before requesting another OTP.");
+                    } else {
+                        alert("Failed to send OTP. Please try again later.");
+                    }
+                })
+                .catch(() => {
+                    alert("Network error. Please try again.");
+                });
+        }
+
+        function verifyOtp() {
+            const otp = document.getElementById('otp_code').value;
+            const phone = document.getElementById('otp_phone').value;
+
+            if (!otp || otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+                alert("Please enter a valid 6-digit OTP.");
+                return;
+            }
+
+            fetch("/verify-otp/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: `otp=${encodeURIComponent(otp)}&phone=${encodeURIComponent(phone)}`
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.status === "verified") {
+                        document.getElementById('new_password').disabled = false;
+                        document.getElementById('changePasswordBtn').disabled = false;
+                    }
+                })
+                .catch(() => {
+                    alert("Error verifying OTP. Please try again.");
+                });
+        }
+
+        function changePassword() {
+            const newPassword = document.getElementById('new_password').value;
+            const otp = document.getElementById('otp_code').value;
+
+            if (!otp || otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+                alert("Please enter a valid 6-digit OTP.");
+                return;
+            }
+
+            if (newPassword.length < 8 || !/[A-Z]/.test(newPassword) || !/[0-9]/.test(newPassword) || !/[^A-Za-z0-9]/.test(newPassword)) {
+                alert("Password must include at least 8 characters, one uppercase letter, one number, and one special character.");
+                return;
+            }
+
+            fetch("/verify-otp/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: `otp=${encodeURIComponent(otp)}&new_password=${encodeURIComponent(newPassword)}`
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.status === "success") {
+                        document.getElementById('new_password').value = "";
+                        document.getElementById('otp_code').value = "";
+                        setTimeout(() => {
+                            window.location.href = "/login/";
+                        }, 2000);
+                    }
+                })
+                .catch(() => {
+                    alert("Something went wrong. Please check your network or try again.");
+                });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";");
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith(name + "=")) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        document.getElementById('profile_pic').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('profilePreviewImg');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const messages = document.querySelectorAll('.top-message');
+            messages.forEach(msg => {
+                setTimeout(() => {
+                    msg.classList.add('show');
+                }, 100);
+                setTimeout(() => {
+                    msg.classList.remove('show');
+                    setTimeout(() => msg.remove(), 500);
+                }, 4000);
+            });
+        });
+    </script>
+</body>
+
+</html>
