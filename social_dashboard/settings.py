@@ -63,6 +63,13 @@ DATABASES = {
     }
 }
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://social-media-dashboard-f5bw.onrender.com"
+]
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
