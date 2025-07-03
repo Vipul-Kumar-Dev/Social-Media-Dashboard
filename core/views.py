@@ -665,7 +665,7 @@ def is_strong_password(password):
             re.search(r"[^A-Za-z0-9]", password))
 
 def linkedin_auth_start(request):
-    redirect_uri = request.build_absolute_uri(reverse('linkedin_callback'))
+    redirect_uri = settings.LINKEDIN_REDIRECT_URI
     linkedin_url = (
         f"https://www.linkedin.com/oauth/v2/authorization"
         f"?response_type=code"
@@ -723,8 +723,8 @@ def linkedin_login(request):
         'response_type': 'code',
         'client_id': settings.LINKEDIN_CLIENT_ID,
         'redirect_uri': settings.LINKEDIN_REDIRECT_URI,
-        'scope': 'openid profile email',
-        'state': 'random123',  # for CSRF protection, later make random
+        'scope': 'r_liteprofile r_emailaddress',
+        'state': 'random123'
     }
     url = 'https://www.linkedin.com/oauth/v2/authorization?' + urllib.parse.urlencode(params)
     return redirect(url)
@@ -836,9 +836,9 @@ def twitter_callback(request):
     return redirect("profile")
 
 def reddit_auth_start(request):
-    client_id = "0Pm-JYkRtHID1mXZkIEK7Q"
-    redirect_uri = "http://localhost:8000/reddit/callback/"
-    state = "s3zK5x5rrNgA0Fo_RGewFA"  # Ideally randomize and save in session
+    client_id = settings.REDDIT_CLIENT_ID
+    redirect_uri = settings.REDDIT_REDIRECT_URI
+    state = "s3zK5x5rrNgA0Fo_RGewFA"
 
     auth_url = "https://www.reddit.com/api/v1/authorize"
     params = {
