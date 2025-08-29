@@ -1,0 +1,391 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="{% static 'Logo.png' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Social Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6A3FE3, #4D9CFF);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-slide {
+            opacity: 0;
+            animation: fadeSlideIn 0.8s ease forwards;
+        }
+
+        .form-wrapper {
+            background: white;
+            max-width: 720px;
+            width: 100%;
+            padding: 35px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            margin: auto;
+            animation-delay: 0.2s;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-size: 28px;
+            animation-delay: 0.4s;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            animation-delay: 0.6s;
+        }
+
+        .form-group,
+        .form-group-full {
+            flex: 1 1 48%;
+        }
+
+        .form-group-full {
+            flex: 1 1 100%;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px 14px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #6A3FE3;
+            outline: none;
+        }
+
+        #username-status,
+        #email-status,
+        #match-status {
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .tooltip-wrapper {
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+
+        .tooltip-wrapper svg {
+            width: 18px;
+            height: 18px;
+            fill: #999;
+            transition: fill 0.3s ease;
+        }
+
+        .tooltip-wrapper:hover svg {
+            fill: red;
+        }
+
+        .tooltip-box {
+            display: none;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tooltip-wrapper:hover .tooltip-box {
+            display: block;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(to right, #6A3FE3, #4D9CFF);
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #5837c7, #377bd8);
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 14px;
+            animation-delay: 1s;
+        }
+
+        .footer-link a {
+            color: #6A3FE3;
+            text-decoration: none;
+        }
+
+        .footer-link a:hover {
+            text-decoration: underline;
+        }
+
+        .top-message {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: #e0f7e9;
+            color: #2e7d32;
+            padding: 14px 30px;
+            border-radius: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            font-size: 15px;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+
+        .top-message.error {
+            background: #fdecea;
+            color: #b71c1c;
+        }
+
+        .top-message.info {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .top-message.show {
+            top: 30px;
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                padding: 40px 16px;
+            }
+
+            .form-wrapper {
+                width: 100%;
+                max-width: 420px;
+                border-radius: 20px;
+                padding: 30px 20px;
+            }
+
+            form {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .form-group,
+            .form-group-full {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+
+            input,
+            button {
+                width: 100%;
+                padding: 14px 16px;
+                font-size: 16px;
+                border-radius: 8px;
+            }
+
+            h2 {
+                font-size: 22px;
+                margin-bottom: 24px;
+            }
+
+            .footer-link {
+                font-size: 14px;
+                margin-top: 20px;
+            }
+
+            .tooltip-box {
+                bottom: 140%;
+                max-width: 240px;
+                text-align: center;
+                white-space: normal;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="top-message{% if message.tags %} {{ message.tags }}{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    <div class="form-wrapper animate-fade-slide" style="animation-delay: 0.3s;">
+        <h2 class="animate-fade-slide">Create Your Account</h2>
+        <form method="post" novalidate autocomplete="new-password" class="animate-fade-slide">
+            {% csrf_token %}
+            <div class="form-group animate-fade-slide" style="animation-delay: 0.4s;">
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name" required>
+            </div>
+            <div class="form-group animate-fade-slide" style="animation-delay: 0.5s;">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" required>
+                <div id="username-status"></div>
+            </div>
+            <div class="form-group animate-fade-slide" style="animation-delay: 0.6s;">
+                <label for="phone">Phone Number</label>
+                <input type="tel" name="phone" id="phone" pattern="[0-9]{10}" maxlength="10"
+                    placeholder="10-digit number" required>
+            </div>
+            <div class="form-group animate-fade-slide" style="animation-delay: 0.7s;">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" required>
+                <div id="email-status"></div>
+            </div>
+            <div class="form-group-full animate-fade-slide" style="animation-delay: 0.8s;">
+                <label for="password">
+                    Password
+                    <span class="tooltip-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+                            <path
+                                d="M25 2C12.3 2 2 12.3 2 25s10.3 23 23 23 23-10.3 23-23S37.7 2 25 2zm0 2c11.6 0 21 9.4 21 21s-9.4 21-21 21S4 36.6 4 25 13.4 4 25 4zm0 7a3 3 0 100 6 3 3 0 000-6zm-4 10v2h1v13h-1v2h8v-2h-1V23h-6z">
+                            </path>d3
+                        </svg>
+                        <span class="tooltip-box">Must include 1 uppercase, 1 number & 1 special character.</span>
+                    </span>
+                </label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <div class="form-group-full animate-fade-slide" style="animation-delay: 0.9s;">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" name="confirm_password" id="confirm_password" required>
+                <div id="match-status"></div>
+            </div>
+            <div class="form-group-full animate-fade-slide" style="animation-delay: 1s;">
+                <button type="submit">Register</button>
+            </div>
+        </form>
+        <div class="footer-link animate-fade-slide">
+            Already have an account? <a href="{% url 'login' %}">Login here</a>
+        </div>
+    </div>
+    <script>
+        const usernameInput = document.getElementById("username");
+        const usernameStatus = document.getElementById("username-status");
+        const emailInput = document.getElementById("email");
+        const emailStatus = document.getElementById("email-status");
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("confirm_password");
+        const matchStatus = document.getElementById("match-status");
+
+        usernameInput.addEventListener("input", () => {
+            const username = usernameInput.value;
+            if (username.length > 2) {
+                fetch(`/check-username/?username=${encodeURIComponent(username)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        usernameStatus.textContent = data.exists ? "❌ Username already taken" : "✅ Username available";
+                        usernameStatus.style.color = data.exists ? "red" : "green";
+                    });
+            } else {
+                usernameStatus.textContent = "";
+            }
+        });
+
+        emailInput.addEventListener("input", () => {
+            const email = emailInput.value.trim();
+            if (email.length > 5 && email.includes("@")) {
+                fetch(`/check-email/?email=${encodeURIComponent(email)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        emailStatus.textContent = data.valid ? "✅ Email is valid" : "❌ Invalid email";
+                        emailStatus.style.color = data.valid ? "green" : "red";
+                    }).catch(() => {
+                        emailStatus.textContent = "⚠️ Could not verify email";
+                        emailStatus.style.color = "orange";
+                    });
+            } else {
+                emailStatus.textContent = "";
+            }
+        });
+
+        confirmPasswordInput.addEventListener("input", () => {
+            const pass = passwordInput.value;
+            const confirmPass = confirmPasswordInput.value;
+            if (confirmPass.length > 0) {
+                matchStatus.textContent = pass === confirmPass ? "✅ Passwords match" : "❌ Passwords do not match";
+                matchStatus.style.color = pass === confirmPass ? "green" : "red";
+            } else {
+                matchStatus.textContent = "";
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const messages = document.querySelectorAll('.top-message');
+            messages.forEach(msg => {
+                setTimeout(() => msg.classList.add('show'), 100);
+                setTimeout(() => {
+                    msg.classList.remove('show');
+                    setTimeout(() => msg.remove(), 500);
+                }, 4000);
+            });
+        });
+    </script>
+</body>
+
+</html>

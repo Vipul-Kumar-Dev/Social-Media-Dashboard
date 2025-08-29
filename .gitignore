@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+node_modules/
+build/
+dist/
+.DS_Store
+Thumbs.db
+*.log
+*.sqlite3
+staticfiles/
+static/
+*.log

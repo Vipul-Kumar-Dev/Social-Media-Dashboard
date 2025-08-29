@@ -1,0 +1,253 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="{% static 'Logo.png' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Social Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6A3FE3, #4D9CFF);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .form-wrapper {
+            background: #fff;
+            max-width: 480px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            font-size: 26px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input {
+            padding: 10px 12px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #6A3FE3;
+            outline: none;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #6A3FE3;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #5837c7;
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .footer-link a {
+            color: #6A3FE3;
+            text-decoration: none;
+        }
+
+        .footer-link a:hover {
+            text-decoration: underline;
+        }
+
+        .top-message {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: #e0f7e9;
+            color: #2e7d32;
+            padding: 14px 30px;
+            border-radius: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            font-size: 17px;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+
+        .top-message.error {
+            background: #fdecea;
+            color: #b71c1c;
+        }
+
+        .top-message.info {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .top-message.show {
+            top: 30px;
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        @media screen and (max-width: 480px) {
+            .form-wrapper {
+                margin: 0 16px;
+            }
+
+            .form-wrapper {
+                padding: 20px 16px;
+                border-radius: 16px;
+                box-shadow: none;
+            }
+
+            h2 {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+
+            input {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            button {
+                font-size: 15px;
+                padding: 10px;
+            }
+
+            .footer-link {
+                font-size: 14px;
+            }
+
+            .top-message {
+                width: 90%;
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+            width: 100%;
+        }
+
+        .form-input:focus {
+            border-color: #6A3FE3;
+            outline: none;
+        }
+
+        .footer-link a+a {
+            display: block;
+            margin-top: 10px;
+        }
+
+        @keyframes fadeSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-slide {
+            animation: fadeSlideIn 0.8s ease forwards;
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-wrapper animate-fade-slide">
+        <h2 class="animate-fade-slide" style="animation-delay: 0.2s;">Login to Your Account</h2>
+
+        <form method="post" novalidate autocomplete="new-password" class="animate-fade-slide"
+            style="animation-delay: 0.4s;">
+            {% csrf_token %}
+            {% for field in form.visible_fields %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% endfor %}
+            <button type="submit" class="animate-fade-slide" style="animation-delay: 0.6s;">Login</button>
+        </form>
+
+        <div class="footer-link animate-fade-slide" style="animation-delay: 0.8s;">
+            Don't have an account? <a href="{% url 'register' %}">Register here</a><br />
+            <a href="{% url 'password_reset' %}">Forgot your password?</a>
+        </div>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="top-message{% if message.tags %} {{ message.tags }}{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const messages = document.querySelectorAll('.top-message');
+            messages.forEach(msg => {
+                setTimeout(() => {
+                    msg.classList.add('show');
+                }, 100);
+
+                setTimeout(() => {
+                    msg.classList.remove('show');
+                    setTimeout(() => msg.remove(), 500);
+                }, 4000);
+            });
+        });
+    </script>
+</body>
+
+</html>

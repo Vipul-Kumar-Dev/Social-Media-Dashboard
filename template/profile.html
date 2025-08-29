@@ -1,0 +1,652 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="{% static 'Logo.png' %}">
+  <title>Profile Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #e1306c 0%, #0077b5 100%);
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      border-radius: 25px;
+      width: 100%;
+      max-width: 90rem;
+      min-height: fit-content;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+      overflow-y: auto;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+      font-size: 2rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="file"],
+    input[type="tel"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
+    input[type="password"]:focus {
+      border-color: #e1306c;
+      box-shadow: 0 0 8px rgba(225, 48, 108, 0.4);
+      outline: none;
+    }
+
+    input[type="file"] {
+      border: none;
+    }
+
+    .email-verification {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .verify-button {
+      background: linear-gradient(135deg, #4d9cff, #8a2be2);
+      padding: 8px 14px;
+      font-size: 13px;
+      border-radius: 8px;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.4s, transform 0.2s;
+    }
+
+    .verify-button:hover {
+      background: linear-gradient(135deg, #377dd1, #6a1ab2);
+      transform: translateY(-2px);
+    }
+
+    button[type="submit"] {
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #3b5998, #1d2f6f);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.4s, transform 0.2s;
+    }
+
+    button[type="submit"]:hover {
+      background: linear-gradient(135deg, #314d86, #152959);
+      transform: translateY(-2px);
+    }
+
+    .back-button {
+      display: inline-block;
+      padding: 14px;
+      background: linear-gradient(135deg, #0077b5, #005582);
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 10px;
+      text-align: center;
+      transition: background 0.4s, transform 0.2s;
+    }
+
+    .back-button:hover {
+      background: linear-gradient(135deg, #006ba0, #00496a);
+      transform: translateY(-2px);
+    }
+
+    .check-status,
+    .small-note {
+      font-size: 13px;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .social-links a {
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+      background: #f2f2f2;
+      padding: 14px;
+      border-radius: 12px;
+      color: #333;
+      text-decoration: none;
+      font-weight: bold;
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    .social-links a i {
+      margin-right: 8px;
+      font-size: 1.1em;
+      vertical-align: middle;
+    }
+
+    .social-links a:hover {
+      transform: translateY(-3px);
+      background: #eee;
+    }
+
+    .tooltip-wrapper {
+      display: inline-block;
+      position: relative;
+      cursor: pointer;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+
+    .tooltip-wrapper svg {
+      width: 18px;
+      height: 18px;
+      fill: #999;
+      transition: fill 0.3s ease;
+    }
+
+    .tooltip-wrapper:hover svg {
+      fill: #e1306c;
+    }
+
+    .tooltip-box {
+      display: none;
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      white-space: nowrap;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .tooltip-wrapper:hover .tooltip-box {
+      display: block;
+    }
+
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 25px;
+    }
+
+    .form-row>div {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media screen and (max-width: 1024px) {
+      .container {
+        padding: 1.5rem;
+      }
+
+      h2 {
+        font-size: 1.75rem;
+      }
+    }
+
+    @media screen and (max-width: 768px) {
+      body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+
+      .container {
+        padding: 1rem;
+        border-radius: 16px;
+      }
+
+      .form-row {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .email-verification {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .email-verification input,
+      .email-verification button {
+        width: 100%;
+      }
+
+      .profile-pic-container>div {
+        flex-direction: column;
+        align-items: start !important;
+        gap: 10px;
+      }
+
+      .profile-preview img {
+        width: 60px;
+        height: 60px;
+        align-self: flex-start;
+      }
+
+      .social-links {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .social-links a {
+        padding: 12px;
+        font-size: 0.95rem;
+      }
+
+      .tooltip-box {
+        width: 100%;
+        left: 0;
+        transform: none;
+      }
+    }
+
+    .profile-preview img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ccc;
+      transition: transform 0.3s;
+    }
+
+    .profile-preview img:hover {
+      transform: scale(1.05);
+      cursor: pointer;
+    }
+
+    .top-message {
+      position: fixed;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.9);
+      background: #e0f7e9;
+      color: #2e7d32;
+      padding: 14px 30px;
+      border-radius: 30px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      font-size: 17px;
+      font-weight: 500;
+      z-index: 9999;
+      opacity: 0;
+      transition: all 0.6s ease;
+    }
+
+    .top-message.error {
+      background: #fdecea;
+      color: #b71c1c;
+    }
+
+    .top-message.info {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .top-message.show {
+      top: 30px;
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards;
+    }
+
+    .fade-in-delayed-1 {
+      animation-delay: 0.2s;
+    }
+
+    .fade-in-delayed-2 {
+      animation-delay: 0.4s;
+    }
+
+    .fade-in-delayed-3 {
+      animation-delay: 0.6s;
+    }
+
+    .fade-in-delayed-4 {
+      animation-delay: 0.8s;
+    }
+
+    .container .logout-topright {
+      position: absolute;
+      top: 18px;
+      right: 30px;
+      font-weight: bold;
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container fade-in fade-in-delayed-1">
+    <a href="/logout/" class="logout-topright">Log Out ⤴️</a>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="top-message{% if message.tags %} {{ message.tags }}{% endif %}">
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    <h2 class="fade-in fade-in-delayed-2">Manage Your Profile</h2>
+    <form method="POST" enctype="multipart/form-data" class="fade-in fade-in-delayed-3" id="profileForm">
+      {% csrf_token %}
+      <div class="form-row">
+        <div>
+          <label for="username">Username</label>
+          <input type="text" name="username" id="username" value="{{ request.user.username }}" />
+          <div id="username-status" class="check-status"></div>
+        </div>
+        <div class="profile-pic-container">
+          <label for="profile_pic">Profile Picture</label>
+          <div style="display: flex; align-items: center; gap: 20px">
+            <input type="file" name="profile_pic" id="profile_pic" accept="image/*" />
+            <div class="profile-preview">
+              <img id="profilePreviewImg"
+                src="{% if profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}{% static 'default-profile.png' %}{% endif %}"
+                alt="Profile Preview"
+                style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 2px solid #ccc;" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label for="email">New Email</label>
+          <div class="email-verification">
+            <input type="email" name="email" id="email" value="{{ request.user.email }}" />
+            <button type="button" class="verify-button" onclick="sendVerificationEmail()">Verify</button>
+          </div>
+          <p class="small-note">Click verify to receive a verification link on
+            the new email.</p>
+        </div>
+        <div>
+          <label for="otp_phone">Phone Number</label>
+          <div class="email-verification">
+            <input type="tel" name="otp_phone" id="otp_phone"
+              placeholder="{% if not request.user.profile.phone_number %}No number found. Please verify.{% endif %}"
+              value="{{ request.user.profile.phone_number|default:'' }}" />
+            <button type="button" class="verify-button" onclick="sendOTP()">Send OTP</button>
+          </div>
+          <p class="small-note">An OTP will be sent to your phone number.</p>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label for="otp_code">Enter OTP</label>
+          <div class="email-verification">
+            <input type="text" id="otp_code" name="otp_code" placeholder="Enter OTP" maxlength="6" disabled />
+            <button type="button" class="verify-button" onclick="verifyOTP()" id="verifyOtpBtn"
+              style="display: none">Verify OTP</button>
+          </div>
+        </div>
+        <div>
+          <label for="forgot_password">Change Password</label>
+          <div class="email-verification">
+            <a href="{% url 'password_reset' %}" class="verify-button" id="forgot_password"
+              style="text-decoration: none; display: inline-block; text-align: center;">Forgot
+              Password?</a>
+          </div>
+          <p class="small-note">To change your password, click the button
+            above and follow the instructions.</p>
+        </div>
+      </div>
+      <div class="social-links fade-in fade-in-delayed-4">
+        <a href="{% url 'youtube_auth_start' %}"
+          style="background: #ff0000; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+          <i class="fab fa-youtube"></i> Link YouTube</a>
+        <a href="{% url 'reddit_auth_start' %}"
+          style="background: #ff4500; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+          <i class="fab fa-reddit-alien"></i> Link Reddit</a>
+        <a href="{% url 'twitter_login' %}"
+          style="background: #1da1f2; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+          <i class="fab fa-twitter"></i> Link Twitter</a>
+        <a href="{% url 'linkedin_auth_start' %}"
+          style="background: #0077b5; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+          <i class="fab fa-linkedin-in"></i> Link LinkedIn</a>
+        <a href="{% url 'pinterest_auth_start' %}"
+          style="background: #BD081C; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+          <i class="fab fa-pinterest"></i> Link Pinterest</a>
+        <a href="{% url 'github_auth_start' %}"
+          style="background: #181717; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+          <i class="fab fa-github"></i> Link Github</a>
+        <a href="{% url 'snapchat_auth_start' %}"
+          style="background: #FFFC00; color: black; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+          <i class="fab fa-snapchat"></i> Link Snapchat</a>
+        <a href="{% url 'discord_auth_start' %}"
+          style="background: #5865F2; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+          <i class="fab fa-discord"></i> Link Discord</a>
+      </div>
+      <button type="submit" class="fade-in fade-in-delayed-4">Save
+        Changes</button>
+      <a href="/" class="back-button fade-in fade-in-delayed-4">← Back to
+        Dashboard</a>
+    </form>
+  </div>
+</body>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const usernameInput = document.getElementById("username");
+    const usernameStatus = document.getElementById("username-status");
+    usernameInput.addEventListener("input", () => {
+      const username = usernameInput.value;
+      if (username.length > 2) {
+        fetch(`/check-username/?username=${encodeURIComponent(username)}`)
+          .then((response) => response.json())
+          .then((data) => {
+            usernameStatus.textContent = data.exists
+              ? "❌ Username already taken"
+              : "✅ Username available";
+            usernameStatus.style.color = data.exists ? "red" : "green";
+          });
+      } else {
+        usernameStatus.textContent = "";
+      }
+    });
+
+    const profileInput = document.getElementById("profile_pic");
+    const preview = document.getElementById("profilePreviewImg");
+    if (profileInput && preview) {
+      profileInput.addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    const messages = document.querySelectorAll(".top-message");
+    messages.forEach((msg) => {
+      setTimeout(() => msg.classList.add("show"), 100);
+      setTimeout(() => {
+        msg.classList.remove("show");
+        setTimeout(() => msg.remove(), 500);
+      }, 4000);
+    });
+
+    if (sessionStorage.getItem("successMessage")) {
+      const msgBox = document.createElement("div");
+      msgBox.className = "top-message";
+      msgBox.innerText = sessionStorage.getItem("successMessage");
+      document.body.prepend(msgBox);
+      setTimeout(() => msgBox.classList.add("show"), 100);
+      setTimeout(() => {
+        msgBox.classList.remove("show");
+        setTimeout(() => msgBox.remove(), 500);
+      }, 3000);
+      sessionStorage.removeItem("successMessage");
+    }
+
+    const phoneField = document.getElementById("otp_phone");
+    const updatedPhone = sessionStorage.getItem("updatedPhone");
+    if (phoneField && updatedPhone) {
+      phoneField.value = updatedPhone;
+      sessionStorage.removeItem("updatedPhone");
+    }
+  });
+
+  function sendVerificationEmail() {
+    const email = document.getElementById("email").value;
+    if (!email || !email.includes("@")) {
+      alert("Please enter a valid email.");
+      return;
+    }
+    fetch(`/send_verification_email/?email=${email}`)
+      .then((response) => response.json())
+      .then(() => {
+        alert("Check your email to verify your new address.");
+      });
+  }
+
+  function sendOTP() {
+    const phone = document.getElementById("otp_phone").value;
+    if (!phone) {
+      alert("Enter a phone number first.");
+      return;
+    }
+    fetch(`/send-otp/?phone=${encodeURIComponent(phone)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status) {
+          alert("OTP sent successfully!");
+          document.getElementById("otp_code").disabled = false;
+          document.getElementById("verifyOtpBtn").style.display =
+            "inline-block";
+        } else {
+          alert(data.error || "Failed to send OTP");
+        }
+      })
+      .catch(() => alert("Error sending OTP."));
+  }
+
+  function verifyOTP() {
+    const otp = document.getElementById("otp_code").value;
+    const phone = document.getElementById("otp_phone").value;
+    if (!otp || otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+      alert("Enter a valid 6-digit OTP.");
+      return;
+    }
+    fetch("/verify-otp/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      body: `otp=${encodeURIComponent(otp)}&phone=${encodeURIComponent(
+        phone
+      )}`,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const otpField = document.getElementById("otp_code");
+        if (data.status === "verified") {
+          otpField.disabled = true;
+          document.getElementById("verifyOtpBtn").style.display = "none";
+          const msgBox = document.createElement("div");
+          msgBox.className = "top-message";
+          msgBox.innerText = "OTP verified successfully";
+          document.body.prepend(msgBox);
+          setTimeout(() => msgBox.classList.add("show"), 100);
+          setTimeout(() => {
+            msgBox.classList.remove("show");
+            setTimeout(() => msgBox.remove(), 500);
+          }, 3000);
+        } else {
+          alert("Invalid OTP");
+        }
+      })
+      .catch(() => alert("OTP verification failed."));
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + "=")) {
+          cookieValue = decodeURIComponent(
+            cookie.substring(name.length + 1)
+          );
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
+
+</html>

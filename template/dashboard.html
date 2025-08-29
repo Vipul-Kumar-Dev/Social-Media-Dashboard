@@ -1,0 +1,1046 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'Logo.png' %}?v=1">
+    <title>Social Media Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #6A3FE3, #4D9CFF);
+            transition: background 0.6s ease;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 30px;
+            display: flex;
+            width: 95%;
+            max-width: 90rem;
+            height: 95vh;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar {
+            background: #e0d6f5;
+            width: 100px;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            border-top-left-radius: 30px;
+            border-bottom-left-radius: 30px;
+            transition: background 0.6s ease;
+        }
+
+        .sidebar a .profile {
+            width: 50px;
+            height: 50px;
+            background: #4D9CFF;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .sidebar i {
+            font-size: 28px;
+            cursor: pointer;
+            transition: transform 0.2s, filter 0.2s;
+        }
+
+        .fa-instagram {
+            color: #E1306C;
+        }
+
+        .fa-twitter {
+            color: #1DA1F2;
+        }
+
+        .fa-linkedin-in {
+            color: #0077b5;
+        }
+
+        .sidebar i.active {
+            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .sidebar i:active {
+            transform: scale(0.9);
+        }
+
+        .main {
+            flex: 1;
+            padding: 20px;
+            position: relative;
+        }
+
+        .content-panel {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            background: #ffffff;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: left 0.6s ease;
+        }
+
+        .content-panel.active {
+            left: 0;
+            overflow: auto;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        .card,
+        .graph,
+        .details {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .graph {
+            height: 200px;
+            background: linear-gradient(to top, #6A3FE3, transparent);
+            border-radius: 20px;
+        }
+
+        .details p {
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        #welcome {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            color: #333;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #welcome .topbar h2 {
+            background: linear-gradient(90deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3rem;
+            text-shadow: none;
+        }
+
+        #welcome p {
+            color: #555;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            text-shadow: none;
+        }
+
+        #welcome .logout-topright {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            font-weight: bold;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .flash {
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 8px 0;
+            animation: slideDrop 4s ease forwards;
+        }
+
+        .flash.success {
+            background: #28a745;
+        }
+
+        .flash.error,
+        .flash.danger {
+            background: #dc3545;
+        }
+
+        .flash.info {
+            background: #17a2b8;
+        }
+
+        .flash.warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        @keyframes slideDrop {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            10% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            90% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+
+        .twitter-graph-container {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            width: -webkit-fill-available;
+            justify-content: center;
+            height: 200px;
+            background: #0a0a0a;
+            border-radius: 15px;
+            padding: 14rem 0rem 1rem 0rem;
+        }
+
+        .twitter-graph-container .bar {
+            position: relative;
+            width: 30px;
+            background: linear-gradient(180deg, #1DA1F2, transparent);
+            box-shadow: 0 0 10px #1DA1F2, 0 0 20px #1DA1F2, 0 0 30px #1DA1F2;
+            border-radius: 5px;
+            animation: rise 2s ease-out forwards;
+        }
+
+        .twitter-graph-container .bar span {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #1DA1F2;
+            font-size: 12px;
+        }
+
+        @keyframes rise {
+            from {
+                height: 0;
+            }
+
+            to {
+                height: inherit;
+            }
+        }
+
+        .fa-reddit {
+            color: #FF4500;
+        }
+
+        .fa-youtube {
+            color: #FF0000;
+        }
+
+        .fa-reddit:hover {
+            filter: drop-shadow(0 0 5px #FF4500);
+        }
+
+        .fa-youtube:hover {
+            filter: drop-shadow(0 0 5px #FF0000);
+        }
+
+        .youtube-graphs {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            background: black;
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .youtube-graph-container {
+            width: 50px;
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .youtube-graph-container .bar {
+            width: 30px;
+            border-radius: 15px;
+            background: linear-gradient(to top, #8B0000, #FF0000);
+            box-shadow: 0 0 20px #FF0000, 0 0 30px #FF0000;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            color: #fff;
+            font-size: 12px;
+            transition: height 0.5s;
+        }
+
+        .youtube-graph-container .bar:hover {
+            transform: scaleY(1.1);
+            box-shadow: 0 0 30px #ff0000, 0 0 50px #ff0000;
+        }
+
+        .hamburger {
+            display: none;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: black;
+            z-index: 1000;
+        }
+
+        @media screen and (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .container {
+                flex-direction: column;
+                position: relative;
+                padding: 1rem 0rem 1rem 0rem;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -200px;
+                top: 0;
+                height: 100vh;
+                width: 100px;
+                background: #fff;
+                border-top-right-radius: 30px;
+                border-bottom-right-radius: 30px;
+                border-top-left-radius: 0px;
+                border-bottom-left-radius: 0px;
+                padding-top: 60px;
+                box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+                transition: left 0.3s ease-in-out;
+                z-index: 999;
+            }
+
+            .sidebar.show {
+                left: 0;
+            }
+
+            .main {
+                margin-left: 0 !important;
+            }
+
+            .content-panel {
+                padding: 20px;
+                border-radius: 20px;
+            }
+
+            #welcome h2 {
+                font-size: 2rem;
+            }
+
+            #welcome p {
+                font-size: 1rem;
+            }
+        }
+
+        @keyframes fadeSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-slide {
+            opacity: 0;
+            animation: fadeSlideIn 0.8s ease forwards;
+        }
+
+        .fa-pinterest {
+            color: #BD081C;
+        }
+
+        .fa-pinterest:hover {
+            filter: drop-shadow(0 0 5px #BD081C);
+        }
+
+        .fa-github {
+            color: #181717;
+        }
+
+        .fa-github:hover {
+            filter: drop-shadow(0 0 5px #181717);
+        }
+
+        .fa-snapchat {
+            color: #FFFC00;
+        }
+
+        .fa-snapchat:hover {
+            filter: drop-shadow(0 0 5px #FFFC00);
+        }
+
+        .fa-discord {
+            color: #5865F2;
+        }
+
+        .fa-discord:hover {
+            filter: drop-shadow(0 0 5px #5865F2);
+        }
+
+        .fa-twitter:hover {
+            color: #1DA1F2;
+        }
+
+        .fa-linkedin-in:hover {
+            color: #0077B5;
+        }
+
+        .profile-card {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .profile-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            border: 3px solid #ddd;
+        }
+
+        .profile-name {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-box strong {
+            font-size: 1.2rem;
+            display: block;
+        }
+
+        .repo-card h4 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .repo-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .repo-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .repo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .repo-name {
+            font-weight: bold;
+            text-decoration: none;
+            color: #0366d6;
+        }
+
+        .repo-name:hover {
+            text-decoration: underline;
+        }
+
+        .repo-lang {
+            font-size: 0.85rem;
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .repo-meta {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .repo-desc {
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .error-card {
+            background: #ffe5e5;
+            color: #b30000;
+            padding: 10px;
+        }
+
+        .empty-card {
+            text-align: center;
+            padding: 15px;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body id="body">
+    <div class="hamburger animate-fade-slide" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <div class="flash-messages">
+        {% for message in messages %}
+        <div class="flash {{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="container animate-fade-slide" id="container">
+        <div class="sidebar animate-fade-slide" id="sidebar">
+            <a href="{% url 'profile' %}">
+                <div class="profile">
+                    <img src="{% if request.user.profile.profile_pic %}{{ request.user.profile.profile_pic.url }}{% else %}/static/default-profile.png{% endif %}"
+                        alt="Profile" style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
+                </div>
+            </a>
+            <i class="fa-brands fa-youtube animate-fade-slide" onclick="switchPanel('youtube', this)"></i>
+            <i class="fa-brands fa-reddit animate-fade-slide" onclick="switchPanel('reddit', this)"></i>
+            <i class="fa-brands fa-twitter animate-fade-slide" onclick="switchPanel('twitter', this)"></i>
+            <i class="fa-brands fa-linkedin-in animate-fade-slide" onclick="switchPanel('linkedin', this)"></i>
+            <i class="fa-brands fa-pinterest animate-fade-slide" onclick="switchPanel('pinterest', this)"></i>
+            <i class="fa-brands fa-github animate-fade-slide" onclick="switchPanel('github', this)"></i>
+            <i class="fa-brands fa-snapchat animate-fade-slide" onclick="switchPanel('snapchat', this)"></i>
+            <i class="fa-brands fa-discord animate-fade-slide" onclick="switchPanel('discord', this)"></i>
+
+        </div>
+        <div class="main animate-fade-slide">
+            <div class="content-panel active animate-fade-slide" id="welcome">
+                <a href="/logout/" class="logout-topright">Log Out ⤴️</a>
+                <div class="topbar" style="justify-content: center;">
+                    <h2>👋 Welcome, {{ request.user.first_name|default:request.user.username }}!</h2>
+                </div>
+                <p>Click on the social media icons on the left to view your analytics and track your growth 🚀</p>
+            </div>
+
+            <div class="content-panel animate-fade-slide" id="youtube">
+                <div class="topbar">
+                    <h2 style="color: #FF0000;">YouTube Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if request.user.profile.youtube_token %}
+                {% if youtube_data %}
+                {% if youtube_data.error %}
+                <div class="card">
+                    <p style="color: red;">⚠️ Error: {{ youtube_data.error }}</p>
+                </div>
+                {% else %}
+                <div class="card" style="text-align: center;">
+                    {% if youtube_data.thumbnail %}
+                    <img src="{{ youtube_data.thumbnail }}" alt="Channel Image"
+                        style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px;">
+                    {% endif %}
+                    <h3 style="color: #FF0000;">{{ youtube_data.channel_title }}</h3>
+                    <p>Subscribers: <strong>{{ youtube_data.subscriber_count }}</strong></p>
+                    <p>Total Views: <strong>{{ youtube_data.view_count }}</strong></p>
+                    <p>Videos: <strong>{{ youtube_data.video_count }}</strong></p>
+                </div>
+
+                <!-- YouTube Bar Graphs -->
+                <div class="youtube-graphs animate-fade-slide">
+                    <div class="youtube-graph-container">
+                        <div class="bar" style="height: {% widthratio youtube_data.subscriber_count 1 0.5 %}px;">
+                            {{ youtube_data.subscriber_count|default:"0" }}
+                        </div>
+                    </div>
+                    <div class="youtube-graph-container">
+                        <div class="bar" style="height: {% widthratio youtube_data.view_count 1 0.03 %}px;">
+                            {{ youtube_data.view_count|default:"0" }}
+                        </div>
+                    </div>
+                    <div class="youtube-graph-container">
+                        <div class="bar" style="height: {% widthratio youtube_data.video_count 1 4 %}px;">
+                            {{ youtube_data.video_count|default:"0" }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- YouTube Graph Labels -->
+                <div class="details animate-fade-slide"
+                    style="display: flex; justify-content: space-around; margin-top: 20px;">
+                    <div>
+                        <h4 style="color: #FF0000;">Subscribers</h4>
+                        <p>{{ youtube_data.subscriber_count|default:"0" }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #FF0000;">Total Views</h4>
+                        <p>{{ youtube_data.view_count|default:"0" }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #FF0000;">Videos</h4>
+                        <p>{{ youtube_data.video_count|default:"0" }}</p>
+                    </div>
+                </div>
+
+                <!-- YouTube Top Videos -->
+                <div class="details animate-fade-slide" style="margin-top: 20px;">
+                    <h4 style="color: #FF0000;">Top Videos</h4>
+                    <ul>
+                        {% for video in youtube_data.top_videos %}
+                        <li>
+                            <a href="https://www.youtube.com/watch?v={{ video.id }}" target="_blank">{{ video.title
+                                }}</a>
+                            – {{ video.views }} views
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p style="color: red;">⚠️ Failed to fetch YouTube data. Please try again later.</p>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>No YouTube data linked yet.
+                        <a href="{% url 'profile' %}" style="color: #FF0000;">Link YouTube now</a>.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Reddit Panel -->
+            <div class="content-panel animate-fade-slide" id="reddit">
+                <div class="topbar">
+                    <h2 style="color: #FF4500;">Reddit Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if request.user.profile.is_reddit_linked %}
+                {% if reddit_data %}
+                {% if reddit_data.error %}
+                <div class="card">
+                    <p style="color: red;">⚠️ Error: {{ reddit_data.error }}</p>
+                </div>
+                {% else %}
+                <div class="card" style="text-align: center;">
+                    <img src="{{ reddit_data.icon_img|default:"
+                        https://www.redditstatic.com/avatars/defaults/v2/avatar_default_7.png" }}" alt="Reddit Avatar"
+                        style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px;">
+                    <h3 style="color: #FF4500;">u/{{ reddit_data.name }}</h3>
+                    <p>Verified Email: <strong>{{ reddit_data.has_verified_email|yesno:"Yes,No" }}</strong></p>
+                    <p>Account Created: <strong>{{ reddit_data.created_utc|date:"Y-m-d H:i" }}</strong></p>
+                </div>
+
+                <div class="details animate-fade-slide"
+                    style="display: flex; justify-content: space-around; margin-top: 20px; text-align: center;">
+                    <div>
+                        <h4 style="color: #FF4500;">Link Karma</h4>
+                        <p><strong>{{ reddit_data.link_karma }}</strong></p>
+                    </div>
+                    <div>
+                        <h4 style="color: #FF4500;">Comment Karma</h4>
+                        <p><strong>{{ reddit_data.comment_karma }}</strong></p>
+                    </div>
+                    <div>
+                        <h4 style="color: #FF4500;">Total Karma</h4>
+                        <p><strong>{{ reddit_data.total_karma }}</strong></p>
+                    </div>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>Reddit account is linked, but data could not be fetched at this time.</p>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>No Reddit data linked yet. <a href="{% url 'profile' %}" style="color: #FF4500;">Link
+                            Reddit now</a>.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Twitter panel -->
+            <div class="content-panel animate-fade-slide" id="twitter">
+                <div class="topbar">
+                    <h2 style="color: #1DA1F2;">Twitter Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if twitter_error %}
+                <div class="card" style="border: 1px solid #f00; background: #fee; padding: 15px; margin-bottom: 15px;">
+                    <p style="color: red; font-weight: bold;">
+                        {{ twitter_error }}
+                    </p>
+                </div>
+                {% endif %}
+
+                {% if twitter_data %}
+                {% if twitter_data.error %}
+                <div class="card">
+                    <p style="color: red;">Error: {{ twitter_data.error }}</p>
+                </div>
+                {% else %}
+                <div class="card" style="text-align: center;">
+                    {% if twitter_data.profile_image %}
+                    <img src="{{ twitter_data.profile_image }}" alt="Profile Image"
+                        style="width:80px; height:80px; border-radius:50%; margin-bottom:10px;">
+                    {% endif %}
+                    <h3 style="color: #1DA1F2;">@{{ twitter_data.username }}</h3>
+                    <p>Name: {{ twitter_data.name }}</p>
+                    <p>ID: {{ twitter_data.id }}</p>
+                    <p>Joined: {{ twitter_data.created_at|default:"-" }}</p>
+                </div>
+
+                <!-- Twitter separate bar boxes -->
+                <div class="twitter-graphs animate-fade-slide"
+                    style="display: flex; justify-content: space-around; margin-top: 20px;">
+                    <div class="twitter-graph-container">
+                        <div class="bar" style="height: {% widthratio twitter_data.followers_count 1 0.5 %}px;">
+                            <span>{{ twitter_data.followers_count|default:"0" }}</span>
+                        </div>
+                    </div>
+                    <div class="twitter-graph-container">
+                        <div class="bar" style="height: {% widthratio twitter_data.following_count 1 0.5 %}px;">
+                            <span>{{ twitter_data.following_count|default:"0" }}</span>
+                        </div>
+                    </div>
+                    <div class="twitter-graph-container">
+                        <div class="bar" style="height: {% widthratio twitter_data.tweets_count 1 0.5 %}px;">
+                            <span>{{ twitter_data.tweets_count|default:"0" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details animate-fade-slide"
+                    style="display: flex; justify-content: space-around; margin-top: 20px;">
+                    <div>
+                        <h4 style="color: #1DA1F2;">Followers</h4>
+                        <p>{{ twitter_data.followers_count|default:"0" }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #1DA1F2;">Following</h4>
+                        <p>{{ twitter_data.following_count|default:"0" }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #1DA1F2;">Tweets</h4>
+                        <p>{{ twitter_data.tweets_count|default:"0" }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>No Twitter data linked yet. <a href="{% url 'profile' %}" style="color: #1DA1F2;">Link Twitter
+                            now</a>.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="content-panel animate-fade-slide" id="linkedin">
+                <div class="topbar">
+                    <h2 style="color: #0077b5;">LinkedIn Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if linkedin_data %}
+                {% if linkedin_data.error %}
+                <div class="card">
+                    <h3>Error fetching LinkedIn data</h3>
+                    <p>{{ linkedin_data.error }}</p>
+                </div>
+                {% else %}
+                <div class="card animate-fade-slide">
+                    <h3 style="color: #0077b5;">Profile</h3>
+                    {% if linkedin_data.picture %}
+                    <img src="{{ linkedin_data.picture }}" alt="Profile Picture"
+                        style="width:80px; height:80px; border-radius:50%; margin-bottom:10px;">
+                    {% endif %}
+                    <p><strong>Name:</strong> {{ linkedin_data.name }}</p>
+                    <p><strong>Email:</strong> {{ linkedin_data.email }}</p>
+                    <p><strong>LinkedIn ID:</strong> {{ linkedin_data.sub }}</p>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card animate-fade-slide">
+                    <p>No Linkedin data linked yet. <a href="{% url 'linkedin_auth_start' %}"
+                            style="color: #0077b5;">Link
+                            Linkedin now</a>.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="content-panel animate-fade-slide" id="pinterest">
+                <div class="topbar">
+                    <h2 style="color: #E60023;">Pinterest Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if pinterest_data %}
+                {% if pinterest_data.error %}
+                <div class="card">
+                    <p style="color: red;">Error: {{ pinterest_data.error }}</p>
+                </div>
+                {% else %}
+                <div class="card" style="text-align: center;">
+                    {% if pinterest_data.profile_image %}
+                    <img src="{{ pinterest_data.profile_image }}" alt="Profile"
+                        style="width:80px;height:80px;border-radius:50%;margin-bottom:10px;">
+                    {% endif %}
+                    <h3 style="color: #E60023;">{{ pinterest_data.username }}</h3>
+                    <p>Followers: <strong>{{ pinterest_data.followers }}</strong></p>
+                    <p>Following: <strong>{{ pinterest_data.following }}</strong></p>
+                    <p>Pins: <strong>{{ pinterest_data.pins }}</strong></p>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>No Pinterest data linked yet. <a href="{% url 'profile' %}" style="color: #E60023;">Link
+                            Pinterest now</a>.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="content-panel animate-fade-slide" id="github">
+                <div class="topbar">
+                    <h2 style="color: #333;">GitHub Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if github_data %}
+                {% if github_data.error %}
+                <div class="card error-card">
+                    <p>Error: {{ github_data.error }}</p>
+                </div>
+                {% else %}
+                <div class="card profile-card">
+                    {% if github_data.avatar_url %}
+                    <img src="{{ github_data.avatar_url }}" alt="Avatar" class="profile-avatar">
+                    {% endif %}
+                    <h3 class="profile-name">{{ github_data.username }}</h3>
+                    <div class="stats-row">
+                        <div class="stat-box"><strong>{{ github_data.public_repos }}</strong><span>Repos</span></div>
+                        <div class="stat-box"><strong>{{ github_data.followers }}</strong><span>Followers</span></div>
+                        <div class="stat-box"><strong>{{ github_data.following }}</strong><span>Following</span></div>
+                    </div>
+                </div>
+
+                {% if github_data.repos %}
+                <div class="card repo-card">
+                    <h4>Recent Repositories</h4>
+                    <ul class="repo-list">
+                        {% for r in github_data.repos|slice:":8" %}
+                        <li class="repo-item">
+                            <div class="repo-header">
+                                <a href="{{ r.html_url }}" target="_blank" class="repo-name">{{ r.name }}</a>
+                                {% if r.language %}<span class="repo-lang">{{ r.language }}</span>{% endif %}
+                            </div>
+                            <div class="repo-meta">
+                                ⭐ {{ r.stargazers_count }} | 🍴 {{ r.forks_count }} | Updated: {{ r.updated_at }}
+                            </div>
+                            {% if r.description %}
+                            <p class="repo-desc">{{ r.description }}</p>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% endif %}
+                {% else %}
+                <div class="card empty-card">
+                    <p>No GitHub data linked yet.
+                        <a href="{% url 'profile' %}" style="color: #333;">Link GitHub now</a>.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="content-panel animate-fade-slide" id="snapchat">
+                <div class="topbar">
+                    <h2 style="color: #FFFC00;">Snapchat Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if snapchat_data %}
+                {% if snapchat_data.error %}
+                <div class="card">
+                    <p style="color: red;">Error: {{ snapchat_data.error }}</p>
+                </div>
+                {% else %}
+                <div class="card" style="text-align: center;">
+                    {% if snapchat_data.bitmoji_avatar %}
+                    <img src="{{ snapchat_data.bitmoji_avatar }}" alt="Bitmoji Avatar"
+                        style="width:80px;height:80px;border-radius:50%;margin-bottom:10px;">
+                    {% endif %}
+                    <h3>{{ snapchat_data.display_name }}</h3>
+                    <p>External ID: <strong>{{ snapchat_data.external_id }}</strong></p>
+                    {% if snapchat_data.bitmoji_selfie_id %}
+                    <p>Bitmoji Selfie ID: <strong>{{ snapchat_data.bitmoji_selfie_id }}</strong></p>
+                    {% endif %}
+                    {% if snapchat_data.bitmoji_background_id %}
+                    <p>Bitmoji Background ID: <strong>{{ snapchat_data.bitmoji_background_id }}</strong></p>
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>No Snapchat data linked yet.
+                        <a href="{% url 'profile' %}" style="color: #FFFC00;">Link Snapchat now</a>.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Discord -->
+            <div class="content-panel animate-fade-slide" id="discord">
+                <div class="topbar">
+                    <h2 style="color: #5865F2;">Discord Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if discord_data %}
+                {% if discord_data.error %}
+                <div class="card">
+                    <p style="color: red;">Error: {{ discord_data.error }}</p>
+                </div>
+                {% else %}
+                <div class="card" style="text-align: center;">
+                    {% if discord_data.avatar %}
+                    <img src="{{ discord_data.avatar }}" alt="Avatar"
+                        style="width:80px;height:80px;border-radius:50%;margin-bottom:10px;">
+                    {% endif %}
+                    <h3>{{ discord_data.username }}#{{ discord_data.discriminator }}</h3>
+                    <p>Servers Joined: <strong>{{ discord_data.guilds_count }}</strong></p>
+                    <p>Friends: <strong>{{ discord_data.friends_count }}</strong></p>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>No Discord data linked yet. <a href="{% url 'profile' %}" style="color: #5865F2;">Link Discord
+                            now</a>.</p>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</body>
+<script>
+    function switchPanel(id, el) {
+        document.querySelectorAll('.content-panel').forEach(panel => {
+            panel.classList.remove('active');
+        });
+        document.querySelector(`#${id}`).classList.add('active');
+        document.querySelectorAll('.sidebar i').forEach(icon => icon.classList.remove('active'));
+        if (el) el.classList.add('active');
+        const body = document.getElementById('body');
+        const sidebar = document.getElementById('sidebar');
+        const container = document.getElementById('container');
+        sidebar.classList.remove('show');
+        const themes = {
+            reddit: { main: '#FF4500', light: '#ffe6dd' },
+            twitter: { main: '#1DA1F2', light: '#d0ecfc' },
+            linkedin: { main: '#0077b5', light: '#cce6f3' },
+            youtube: { main: '#FF0000', light: '#ffd6d6' },
+            pinterest: { main: '#E60023', light: '#ffd6db' },
+            github: { main: '#181717', light: '#e6e6e6' },
+            snapchat: { main: '#FFFC00', light: '#fffdd0' },
+            discord: { main: '#5865F2', light: '#dcdffe' },
+            welcome: { main: 'linear-gradient(135deg, #6A3FE3, #4D9CFF)', light: '#e0d6f5' }
+        };
+        if (themes[id]) {
+            body.style.background = themes[id].main;
+            sidebar.style.background = themes[id].light;
+            container.style.background = themes[id].light;
+        } else {
+            body.style.background = '#f5f5f5';
+            sidebar.style.background = '#ddd';
+            container.style.background = '#ddd';
+        }
+    }
+    window.onload = function () {
+        switchPanel('welcome');
+    };
+    document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(() => {
+            document.querySelectorAll(".flash").forEach(el => el.remove());
+        }, 80000000);
+    });
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('show');
+    }
+</script>
+
+</html>
