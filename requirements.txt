@@ -6,3 +6,4 @@ PyJWT
 arrow
 twilio
 gunicorn
+Pillow
