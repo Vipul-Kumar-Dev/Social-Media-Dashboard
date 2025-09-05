@@ -273,7 +273,7 @@ def register(request):
             username=username,
             password=password
         )
-        Profile.objects.create(user=user, phone=phone)
+        Profile.objects.create(user=user, phone_number=phone)
         login(request, user)
         messages.success(request, "Registration successful! Please log in to continue.")
         return redirect('login')
