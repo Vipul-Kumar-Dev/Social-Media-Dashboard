@@ -8,8 +8,8 @@ TEMPLATE_DIR = os.path.join(BASE_DIR,'template')
 STATIC_DIR = os.path.join(BASE_DIR,'static')
 os.makedirs(os.path.join(settings.MEDIA_ROOT, 'profile_pics'), exist_ok=True)
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "j9k*spule$g6&dnpf26w@l*jkelj&dhvhry@r%4=^(i0-hyg99")
-DEBUG = True
-ALLOWED_HOSTS = ["social-media-dashboard-f5bw.onrender.com", "localhost", "127.0.0.1"]
+DEBUG = os.environ.get("DEBUG", "False") == "True"
+ALLOWED_HOSTS = ["social-media-dashboard-f5bw.onrender.com", "localhost", "127.0.0.1", "3ad96de6422c.ngrok-free.app"]
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -108,3 +108,9 @@ GITHUB_REDIRECT_URI = os.getenv("GITHUB_REDIRECT_URI")
 SNAPCHAT_CLIENT_ID = os.getenv("SNAPCHAT_CLIENT_ID")
 SNAPCHAT_CLIENT_SECRET = os.getenv("SNAPCHAT_CLIENT_SECRET")
 SNAPCHAT_REDIRECT_URI = os.getenv("SNAPCHAT_REDIRECT_URI")
+DISCORD_CLIENT_ID = os.getenv("DISCORD_CLIENT_ID")
+DISCORD_CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
+DISCORD_REDIRECT_URI = os.getenv("DISCORD_REDIRECT_URI")
+PINTEREST_CLIENT_ID = os.getenv("PINTEREST_CLIENT_ID")
+PINTEREST_CLIENT_SECRET = os.getenv("PINTEREST_CLIENT_SECRET")
+PINTEREST_REDIRECT_URI = os.getenv("PINTEREST_REDIRECT_URI")

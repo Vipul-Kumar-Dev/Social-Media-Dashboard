@@ -1,0 +1,8 @@
+Django
+python-dotenv
+praw
+requests
+PyJWT
+arrow
+twilio
+gunicorn

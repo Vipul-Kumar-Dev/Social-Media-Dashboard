@@ -20,7 +20,6 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.models import User
 import urllib
-
 from social_dashboard.settings import TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
 from .forms import ProfileUpdateForm
 from django.contrib.auth import logout as auth_logout
