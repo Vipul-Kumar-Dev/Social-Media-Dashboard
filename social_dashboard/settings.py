@@ -12,7 +12,7 @@ STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "j9k*spule$g6&dnpf26w@l*jkelj&dhvhry@r%4=^(i0-hyg99")
 
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "social-media-dashboard-1-j8vi.onrender.com",
@@ -71,9 +71,10 @@ TEMPLATES = [
 WSGI_APPLICATION = "social_dashboard.wsgi.application"
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL", f"sqlite:///{BASE_DIR}/db.sqlite3")
-    )
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "/var/data/db.sqlite3",
+    }
 }
 
 SESSION_COOKIE_SECURE = True
