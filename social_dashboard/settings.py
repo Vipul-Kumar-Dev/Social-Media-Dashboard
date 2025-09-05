@@ -71,10 +71,9 @@ TEMPLATES = [
 WSGI_APPLICATION = "social_dashboard.wsgi.application"
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "/var/data/db.sqlite3",
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3")
+    )
 }
 
 SESSION_COOKIE_SECURE = True
