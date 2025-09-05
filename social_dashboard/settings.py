@@ -9,7 +9,7 @@ STATIC_DIR = os.path.join(BASE_DIR,'static')
 os.makedirs(os.path.join(settings.MEDIA_ROOT, 'profile_pics'), exist_ok=True)
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "j9k*spule$g6&dnpf26w@l*jkelj&dhvhry@r%4=^(i0-hyg99")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
-ALLOWED_HOSTS = ["social-media-dashboard-f5bw.onrender.com", "localhost", "127.0.0.1", "3ad96de6422c.ngrok-free.app"]
+ALLOWED_HOSTS = ["https://social-media-dashboard-1-j8vi.onrender.com/", "localhost", "127.0.0.1"]
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
