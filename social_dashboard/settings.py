@@ -14,14 +14,14 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "j9k*spule$g6&dnpf26w@l*jkelj&dhvhry
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "social-media-dashboard-1-j8vi.onrender.com",
+    "https://social-media-dashboard-4hn7.onrender.com",
     "localhost",
     "127.0.0.1",
     "*",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://social-media-dashboard-1-j8vi.onrender.com",
+    "https://social-media-dashboard-4hn7.onrender.com",
 ]
 
 INSTALLED_APPS = [
