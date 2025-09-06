@@ -1202,12 +1202,12 @@ def discord_callback(request):
         messages.success(request, "Discord account linked successfully!")
     except Exception as e:
         messages.error(request, f"Error saving Discord token: {e}")
-    return redirect("discord_analysis")
+    return redirect("profile")
 
 @login_required
 def discord_analysis(request):
     data = fetch_discord_account_data(request.user)
-    return render(request, "discord_analysis.html", {"discord_data": data})
+    return render(request, "profile", {"discord_data": data})
 
 def fetch_discord_account_data(user):
     access_token = user.profile.discord_token
