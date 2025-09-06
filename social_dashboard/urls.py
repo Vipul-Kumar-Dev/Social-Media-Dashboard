@@ -53,6 +53,7 @@ urlpatterns = [
     # Discord
     path('discord/login/', views.discord_auth_start, name='discord_auth_start'),
     path('discord/callback/', views.discord_callback, name='discord_callback'),
+    path("discord/analysis/", views.discord_analysis, name="discord_analysis"),
 
     # Password reset
     path('forgot-password/', views.forgot_password_view, name='password_reset'),
