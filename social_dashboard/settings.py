@@ -1,5 +1,4 @@
 import os
-import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -71,9 +70,10 @@ TEMPLATES = [
 WSGI_APPLICATION = "social_dashboard.wsgi.application"
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3")
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 SESSION_COOKIE_SECURE = True
