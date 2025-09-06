@@ -1168,11 +1168,12 @@ def discord_auth_start(request):
         "client_id": settings.DISCORD_CLIENT_ID,
         "redirect_uri": settings.DISCORD_REDIRECT_URI,
         "response_type": "code",
-        "scope": "identify email",
+        "scope": "identify email guilds",
         "prompt": "consent",
     }
     auth_url = "https://discord.com/api/oauth2/authorize"
     return redirect(f"{auth_url}?{urllib.parse.urlencode(params)}")
+
 
 @login_required
 def discord_callback(request):
@@ -1180,48 +1181,72 @@ def discord_callback(request):
     if not code:
         messages.error(request, "No authorization code received from Discord.")
         return redirect("profile")
+
     data = {
         "client_id": settings.DISCORD_CLIENT_ID,
         "client_secret": settings.DISCORD_CLIENT_SECRET,
         "grant_type": "authorization_code",
         "code": code,
         "redirect_uri": settings.DISCORD_REDIRECT_URI,
-        "scope": "identify email",
+        "scope": "identify email guilds",
     }
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     token_response = requests.post("https://discord.com/api/oauth2/token", data=data, headers=headers)
     token_data = token_response.json()
+
     access_token = token_data.get("access_token")
     if not access_token:
         messages.error(request, f"Discord Token Error: {token_data}")
         return redirect("profile")
+
     try:
         profile = request.user.profile
         profile.discord_token = access_token
+        profile.discord_token_updated_at = timezone.now()
         profile.save()
         messages.success(request, "Discord account linked successfully!")
     except Exception as e:
         messages.error(request, f"Error saving Discord token: {e}")
+
     return redirect("profile")
 
-@login_required
-def discord_analysis(request):
-    data = fetch_discord_account_data(request.user)
-    return render(request, "profile", {"discord_data": data})
 
 def fetch_discord_account_data(user):
     access_token = user.profile.discord_token
     headers = {"Authorization": f"Bearer {access_token}"}
+    discord_data = {}
+
+    # Fetch user profile
     user_resp = requests.get("https://discord.com/api/users/@me", headers=headers)
     if user_resp.status_code != 200:
-        return {"error": "Failed to fetch Discord data"}
+        return {"error": f"Failed to fetch Discord profile ({user_resp.status_code})"}
     user_data = user_resp.json()
-    return {
-        "username": user_data.get("username", ""),
-        "discriminator": user_data.get("discriminator", ""),
-        "avatar": f"https://cdn.discordapp.com/avatars/{user_data.get('id')}/{user_data.get('avatar')}.png",
-        "email": user_data.get("email", ""),
+
+    discord_data["profile"] = {
+        "id": user_data.get("id"),
+        "username": user_data.get("username"),
+        "discriminator": user_data.get("discriminator"),
+        "avatar_url": f"https://cdn.discordapp.com/avatars/{user_data['id']}/{user_data.get('avatar')}.png"
+        if user_data.get("avatar") else None,
+        "email": user_data.get("email", "")
     }
+
+    # Fetch servers (guilds)
+    guilds_resp = requests.get("https://discord.com/api/users/@me/guilds", headers=headers)
+    if guilds_resp.status_code == 200:
+        discord_data["guilds"] = [
+            {
+                "id": g.get("id"),
+                "name": g.get("name"),
+                "icon_url": f"https://cdn.discordapp.com/icons/{g['id']}/{g['icon']}.png"
+                            if g.get("icon") else None,
+                "owner": g.get("owner"),
+                "permissions": g.get("permissions")
+            }
+            for g in guilds_resp.json()
+        ]
+
+    return discord_data
 def pinterest_auth_start(request):
     params = {
         "client_id": settings.PINTEREST_CLIENT_ID,

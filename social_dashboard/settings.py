@@ -22,7 +22,6 @@ ALLOWED_HOSTS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "https://social-media-dashboard-1-j8vi.onrender.com",
-    "https://social-media-dashboard-f5bw.onrender.com"
 ]
 
 INSTALLED_APPS = [
