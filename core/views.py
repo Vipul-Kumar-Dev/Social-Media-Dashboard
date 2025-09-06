@@ -1156,6 +1156,24 @@ def discord_auth_start(request):
     }
     auth_url = "https://discord.com/api/oauth2/authorize"
     return redirect(f"{auth_url}?{urllib.parse.urlencode(params)}")
+import urllib.parse
+import requests
+from django.conf import settings
+from django.shortcuts import redirect, render
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
+def discord_auth_start(request):
+    params = {
+        "client_id": settings.DISCORD_CLIENT_ID,
+        "redirect_uri": settings.DISCORD_REDIRECT_URI,
+        "response_type": "code",
+        "scope": "identify email",
+        "prompt": "consent",
+    }
+    auth_url = "https://discord.com/api/oauth2/authorize"
+    return redirect(f"{auth_url}?{urllib.parse.urlencode(params)}")
+
 @login_required
 def discord_callback(request):
     code = request.GET.get("code")
@@ -1184,12 +1202,16 @@ def discord_callback(request):
         messages.success(request, "Discord account linked successfully!")
     except Exception as e:
         messages.error(request, f"Error saving Discord token: {e}")
-    return redirect("profile")
+    return redirect("discord_analysis")
+
+@login_required
+def discord_analysis(request):
+    data = fetch_discord_account_data(request.user)
+    return render(request, "discord_analysis.html", {"discord_data": data})
+
 def fetch_discord_account_data(user):
     access_token = user.profile.discord_token
-    headers = {
-        "Authorization": f"Bearer {access_token}"
-    }
+    headers = {"Authorization": f"Bearer {access_token}"}
     user_resp = requests.get("https://discord.com/api/users/@me", headers=headers)
     if user_resp.status_code != 200:
         return {"error": "Failed to fetch Discord data"}
