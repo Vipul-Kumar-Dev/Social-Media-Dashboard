@@ -599,9 +599,12 @@
                     id="welcome">
                     <a href="/logout/" class="logout-topright">Log Out ⤴️</a>
                     <div class="topbar" style="justify-content: center;">
-                        <h2>👋 Welcome, {{
-                            request.user.first_name|default:request.user.username
-                            }}!</h2>
+                        <h2>👋 {% if request.user.first_name %}
+                            Welcome, {{ request.user.first_name }}!
+                            {% else %}
+                            Welcome, {{ request.user.username }}!
+                            {% endif %}
+                        </h2>
                     </div>
                     <p>Click on the social media icons on the left to view your
                         analytics and track your growth 🚀</p>
