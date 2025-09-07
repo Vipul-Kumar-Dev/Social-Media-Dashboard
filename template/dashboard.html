@@ -418,14 +418,6 @@
             animation: fadeSlideIn 0.8s ease forwards;
         }
 
-        .fa-pinterest {
-            color: #BD081C;
-        }
-
-        .fa-pinterest:hover {
-            filter: drop-shadow(0 0 5px #BD081C);
-        }
-
         .fa-github {
             color: #181717;
         }
@@ -440,14 +432,6 @@
 
         .fa-snapchat:hover {
             filter: drop-shadow(0 0 5px #FFFC00);
-        }
-
-        .fa-discord {
-            color: #5865F2;
-        }
-
-        .fa-discord:hover {
-            filter: drop-shadow(0 0 5px #5865F2);
         }
 
         .fa-twitter:hover {
@@ -584,14 +568,10 @@
                     onclick="switchPanel('twitter', this)"></i>
                 <i class="fa-brands fa-linkedin-in animate-fade-slide"
                     onclick="switchPanel('linkedin', this)"></i>
-                <i class="fa-brands fa-pinterest animate-fade-slide"
-                    onclick="switchPanel('pinterest', this)"></i>
                 <i class="fa-brands fa-github animate-fade-slide"
                     onclick="switchPanel('github', this)"></i>
                 <i class="fa-brands fa-snapchat animate-fade-slide"
                     onclick="switchPanel('snapchat', this)"></i>
-                <i class="fa-brands fa-discord animate-fade-slide"
-                    onclick="switchPanel('discord', this)"></i>
 
             </div>
             <div class="main animate-fade-slide">
@@ -905,44 +885,6 @@
                     {% endif %}
                 </div>
 
-                <div class="content-panel animate-fade-slide" id="pinterest">
-                    <div class="topbar">
-                        <h2 style="color: #E60023;">Pinterest Analytics</h2>
-                        <div><a href="/logout/">Log Out ⤴️</a></div>
-                    </div>
-
-                    {% if pinterest_data %}
-                    {% if pinterest_data.error %}
-                    <div class="card">
-                        <p style="color: red;">Error: {{ pinterest_data.error
-                            }}</p>
-                    </div>
-                    {% else %}
-                    <div class="card" style="text-align: center;">
-                        {% if pinterest_data.profile_image %}
-                        <img src="{{ pinterest_data.profile_image }}"
-                            alt="Profile"
-                            style="width:80px;height:80px;border-radius:50%;margin-bottom:10px;">
-                        {% endif %}
-                        <h3 style="color: #E60023;">{{ pinterest_data.username
-                            }}</h3>
-                        <p>Followers: <strong>{{ pinterest_data.followers
-                                }}</strong></p>
-                        <p>Following: <strong>{{ pinterest_data.following
-                                }}</strong></p>
-                        <p>Pins: <strong>{{ pinterest_data.pins }}</strong></p>
-                    </div>
-                    {% endif %}
-                    {% else %}
-                    <div class="card">
-                        <p>No Pinterest data linked yet. <a
-                                href="{% url 'profile' %}"
-                                style="color: #E60023;">Link
-                                Pinterest now</a>.</p>
-                    </div>
-                    {% endif %}
-                </div>
-
                 <div class="content-panel animate-fade-slide" id="github">
                     <div class="topbar">
                         <h2 style="color: #333;">GitHub Analytics</h2>
@@ -1054,43 +996,6 @@
                     {% endif %}
                 </div>
 
-                <!-- Discord -->
-                <div class="content-panel animate-fade-slide" id="discord">
-                    <div class="topbar">
-                        <h2 style="color: #5865F2;">Discord Analytics</h2>
-                        <div><a href="/logout/">Log Out ⤴️</a></div>
-                    </div>
-
-                    {% if discord_data %}
-                    {% if discord_data.error %}
-                    <div class="card">
-                        <p style="color: red;">Error: {{ discord_data.error
-                            }}</p>
-                    </div>
-                    {% else %}
-                    <div class="card" style="text-align: center;">
-                        {% if discord_data.profile.avatar_url %}
-                        <img src="{{ discord_data.profile.avatar_url }}"
-                            alt="Avatar"
-                            style="width:80px;height:80px;border-radius:50%;margin-bottom:10px;">
-                        {% endif %}
-                        <h3>{{ discord_data.profile.username }}#{{
-                            discord_data.profile.discriminator }}</h3>
-                        <p>Servers Joined: <strong>{{ discord_data.guilds|length
-                                }}</strong></p>
-                        <p>Friends: <strong>0</strong></p>
-                    </div>
-                    {% endif %}
-                    {% else %}
-                    <div class="card">
-                        <p>No Discord data linked yet. <a
-                                href="{% url 'profile' %}"
-                                style="color: #5865F2;">Link Discord
-                                now</a>.</p>
-                    </div>
-                    {% endif %}
-                </div>
-
             </div>
         </div>
     </body>
@@ -1111,10 +1016,8 @@
             twitter: { main: '#1DA1F2', light: '#d0ecfc' },
             linkedin: { main: '#0077b5', light: '#cce6f3' },
             youtube: { main: '#FF0000', light: '#ffd6d6' },
-            pinterest: { main: '#E60023', light: '#ffd6db' },
             github: { main: '#181717', light: '#e6e6e6' },
             snapchat: { main: '#FFFC00', light: '#fffdd0' },
-            discord: { main: '#5865F2', light: '#dcdffe' },
             welcome: { main: 'linear-gradient(135deg, #6A3FE3, #4D9CFF)', light: '#e0d6f5' }
         };
         if (themes[id]) {

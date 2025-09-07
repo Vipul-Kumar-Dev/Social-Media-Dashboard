@@ -38,10 +38,6 @@ urlpatterns = [
     path('youtube_auth_start', views.youtube_auth_start, name='youtube_auth_start'),
     path('youtube/callback/', views.youtube_callback, name='youtube_callback'),
 
-    # Pinterest
-    path('pinterest/login/', views.pinterest_auth_start, name='pinterest_auth_start'),
-    path('pinterest/callback/', views.pinterest_callback, name='pinterest_callback'),
-
     # GitHub
     path('github/login/', views.github_auth_start, name='github_auth_start'),
     path('github/callback/', views.github_callback, name='github_callback'),
@@ -49,10 +45,6 @@ urlpatterns = [
     # Snapchat
     path('snapchat/login/', views.snapchat_auth_start, name='snapchat_auth_start'),
     path('snapchat/callback/', views.snapchat_callback, name='snapchat_callback'),
-
-    # Discord
-    path('discord/login/', views.discord_auth_start, name='discord_auth_start'),
-    path('discord/callback/', views.discord_callback, name='discord_callback'),
 
     # Password reset
     path('forgot-password/', views.forgot_password_view, name='password_reset'),
