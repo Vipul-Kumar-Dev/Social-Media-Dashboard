@@ -20,7 +20,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.models import User
 import urllib
-from social_dashboard.settings import TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
+from social_dashboard.settings import EMAIL_VERIFICATION_API_KEY, EMAIL_VERIFICATION_API_URL, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
 from .forms import ProfileUpdateForm
 from django.contrib.auth import logout as auth_logout
 from .models import Profile
@@ -222,8 +222,6 @@ def dashboard(request):
         'github_data': github_data,
         'snapchat_data': snapchat_data,
     })
-EMAIL_VERIFICATION_API_KEY = "OroLOsouX6WNO4DwNkwQk"
-EMAIL_VERIFICATION_API_URL = "https://api.emaillistverify.com/api/verifyEmail"
 def verify_email(email):
     try:
         params = {
@@ -416,7 +414,8 @@ def profile(request):
 
 @login_required
 def send_verification_email(request):
-    email = request.GET.get('email')                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+    email = request.GET.get('email')
+    print("DEBUG EMAIL CHECK:", email)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
     if email:
         user = request.user
         profile = user.profile
@@ -490,19 +489,25 @@ def check_username(request):
     exists = User.objects.filter(username__iexact=username).exists()
     return JsonResponse({'exists': exists})
 def check_email(request):
-    email = request.GET.get('email', None)
+    email = request.GET.get('email')
     if not email:
-        return JsonResponse({'valid': False})
+        return JsonResponse({"valid": False, "reason": "No email provided"})
     try:
         response = requests.get(
-            EMAIL_VERIFICATION_API_URL,
-            params={'secret': EMAIL_VERIFICATION_API_KEY, 'email': email},
-            timeout=5
+            settings.EMAIL_VERIFICATION_API_URL,
+            params={"api_key": settings.EMAIL_VERIFICATION_API_KEY, "email": email},
+            timeout=3
         )
-        result = response.text.strip().lower()
-        return JsonResponse({'valid': result == 'ok'})
-    except requests.exceptions.RequestException:
-        return JsonResponse({'valid': False})
+        data = response.json()
+        if "error" in data:
+            return JsonResponse({"valid": False, "reason": data["error"].get("message", "API error")})
+        deliverability = data.get("deliverability", "").lower()
+        return JsonResponse({
+            "valid": deliverability in ["deliverable", "risky"],
+            "reason": deliverability
+        })
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({"valid": False, "reason": str(e)})
 def logout(request):
     auth_logout(request)
     messages.info(request, "Logged out successfully.")
