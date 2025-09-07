@@ -55,9 +55,8 @@ def dashboard(request):
     facebook_data = None
 
     if profile.linkedin_token:
-        headers = {"Authorization": f"Bearer {profile.linkedin_token}"}
         try:
-            resp = requests.get("https://api.linkedin.com/v2/userinfo", headers=headers, timeout=10)
+            resp = requests.get("https://api.linkedin.com/v2/userinfo", headers={"Authorization": f"Bearer {profile.linkedin_token}"}, timeout=10)
             if resp.status_code == 200:
                 user_info = resp.json()
                 linkedin_data = {
@@ -72,12 +71,8 @@ def dashboard(request):
             linkedin_data = {"error": str(e)}
 
     if profile.twitter_access_token:
-        headers = {"Authorization": f"Bearer {profile.twitter_access_token}"}
         try:
-            user_resp = requests.get(
-                "https://api.twitter.com/2/users/me?user.fields=profile_image_url,public_metrics,description,created_at",
-                headers=headers, timeout=10
-            )
+            user_resp = requests.get("https://api.twitter.com/2/users/me?user.fields=profile_image_url,public_metrics,description,created_at", headers={"Authorization": f"Bearer {profile.twitter_access_token}"}, timeout=10)
             if user_resp.status_code == 200:
                 user_data = user_resp.json().get("data", {})
                 twitter_data = {
@@ -97,11 +92,8 @@ def dashboard(request):
             twitter_data = {"error": str(e)}
 
     if profile.reddit_access_token:
-        headers = {
-            "Authorization": f"Bearer {profile.reddit_access_token}",
-            "User-Agent": "SocialMediaDashboard/1.0"
-        }
         try:
+            headers = {"Authorization": f"Bearer {profile.reddit_access_token}", "User-Agent": "SocialMediaDashboard/1.0"}
             user_resp = requests.get("https://oauth.reddit.com/api/v1/me", headers=headers, timeout=10)
             if user_resp.status_code == 200:
                 user_data = user_resp.json()
@@ -111,7 +103,7 @@ def dashboard(request):
                     "comment_karma": user_data.get("comment_karma"),
                     "total_karma": user_data.get("total_karma"),
                     "verified": user_data.get("verified"),
-                    "created_utc": datetime.utcfromtimestamp(user_data.get("created_utc")),
+                    "created_utc": user_data.get("created_utc"),
                     "has_verified_email": user_data.get("has_verified_email"),
                     "icon_img": user_data.get("icon_img", "")
                 }
@@ -121,16 +113,8 @@ def dashboard(request):
             reddit_data = {"error": str(e)}
 
     if profile.youtube_token:
-        headers = {
-            "Authorization": f"Bearer {profile.youtube_token}",
-            "Accept": "application/json"
-        }
         try:
-            yt_resp = requests.get(
-                "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true",
-                headers=headers,
-                timeout=10
-            )
+            yt_resp = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true", headers={"Authorization": f"Bearer {profile.youtube_token}", "Accept": "application/json"}, timeout=10)
             if yt_resp.status_code == 200:
                 data = yt_resp.json()
                 if "items" in data and data["items"]:
@@ -148,26 +132,22 @@ def dashboard(request):
             else:
                 try:
                     error_msg = yt_resp.json().get("error", {}).get("message", "Unknown error.")
-                except Exception as e:
-                    error_msg = f"Error parsing response: {str(e)}"
+                except Exception:
+                    error_msg = "Unknown error."
                 youtube_data = {"error": f"Failed to fetch YouTube data: {error_msg}"}
         except Exception as e:
             youtube_data = {"error": f"Exception occurred while fetching YouTube data: {str(e)}"}
 
     if profile.github_token:
-        headers = {
-            "Authorization": f"token {profile.github_token}",
-            "Accept": "application/vnd.github.v3+json"
-        }
         try:
+            headers = {"Authorization": f"token {profile.github_token}", "Accept": "application/vnd.github.v3+json"}
             github_resp = requests.get("https://api.github.com/user", headers=headers, timeout=10)
             if github_resp.status_code == 200:
                 user_data = github_resp.json()
                 repos_resp = requests.get("https://api.github.com/user/repos?per_page=5&sort=updated", headers=headers, timeout=10)
                 repos_list = []
                 if repos_resp.status_code == 200:
-                    repos_data = repos_resp.json()
-                    for repo in repos_data:
+                    for repo in repos_resp.json():
                         repos_list.append({
                             "name": repo.get("name"),
                             "html_url": repo.get("html_url"),
@@ -191,10 +171,7 @@ def dashboard(request):
 
     if profile.snapchat_access_token:
         try:
-            headers = {
-                "Authorization": f"Bearer {profile.snapchat_access_token}",
-                "Content-Type": "application/json",
-            }
+            headers = {"Authorization": f"Bearer {profile.snapchat_access_token}", "Content-Type": "application/json"}
             resp = requests.get("https://kit.snapchat.com/v1/me", headers=headers, timeout=10)
             if resp.status_code == 200:
                 me_data = resp.json().get("data", {}).get("me", {})
@@ -211,46 +188,9 @@ def dashboard(request):
             snapchat_data = {"error": str(e)}
 
     if profile.facebook_token:
-        access_token = profile.facebook_token
-        fields = [
-            "id",
-            "name",
-            "email",
-            "birthday",
-            "age_range",
-            "gender",
-            "link",
-            "friends",
-            "hometown",
-            "location",
-            "likes",
-            "photos",
-            "videos",
-            "posts"
-        ]
-        url = f"https://graph.facebook.com/me?fields={','.join(fields)}&access_token={access_token}"
-        try:
-            resp = requests.get(url, timeout=10).json()
-            if "error" in resp:
-                facebook_data = {"error": resp["error"].get("message", "Failed to fetch data")}
-            else:
-                facebook_data = {
-                    "name": resp.get("name"),
-                    "email": resp.get("email"),
-                    "birthday": resp.get("birthday"),
-                    "age_range": resp.get("age_range"),
-                    "gender": resp.get("gender"),
-                    "link": resp.get("link"),
-                    "friends_count": len(resp.get("friends", {}).get("data", [])) if "friends" in resp else None,
-                    "hometown": resp.get("hometown", {}).get("name") if "hometown" in resp else None,
-                    "location": resp.get("location", {}).get("name") if "location" in resp else None,
-                    "likes_count": len(resp.get("likes", {}).get("data", [])) if "likes" in resp else None,
-                    "photos_count": len(resp.get("photos", {}).get("data", [])) if "photos" in resp else None,
-                    "videos_count": len(resp.get("videos", {}).get("data", [])) if "videos" in resp else None,
-                    "posts_count": len(resp.get("posts", {}).get("data", [])) if "posts" in resp else None
-                }
-        except Exception as e:
-            facebook_data = {"error": str(e)}
+        facebook_data = fetch_facebook_user_data(request.user)
+    else:
+        facebook_data = None
 
     return render(request, 'dashboard.html', {
         'linkedin_data': linkedin_data,
@@ -1221,7 +1161,7 @@ def facebook_callback(request):
     code = request.GET.get("code")
     if not code:
         messages.error(request, "No authorization code received.")
-        return redirect("profile")
+        return redirect("dashboard")
     token_url = "https://graph.facebook.com/v18.0/oauth/access_token"
     params = {
         "client_id": settings.FACEBOOK_CLIENT_ID,
@@ -1229,20 +1169,22 @@ def facebook_callback(request):
         "client_secret": settings.FACEBOOK_CLIENT_SECRET,
         "code": code,
     }
-    response = requests.get(token_url, params=params)
-    data = response.json()
-    access_token = data.get("access_token")
-    if not access_token:
-        messages.error(request, f"Token Error: {data}")
-        return redirect("profile")
     try:
+        r = requests.get(token_url, params=params, timeout=10)
+        r.raise_for_status()
+        data = r.json()
+        short_token = data.get("access_token")
+        if not short_token:
+            messages.error(request, f"Token Error: {data}")
+            return redirect("dashboard")
+        long_token = exchange_long_lived_token(short_token) or short_token
         profile = request.user.profile
-        profile.facebook_token = access_token
+        profile.facebook_token = long_token
         profile.save()
         messages.success(request, "Facebook/Instagram account linked successfully!")
     except Exception as e:
-        messages.error(request, f"Error saving token: {e}")
-    return redirect("profile")
+        messages.error(request, f"Error obtaining token: {e}")
+    return redirect("dashboard")
 
 def exchange_long_lived_token(short_token):
     url = "https://graph.facebook.com/v18.0/oauth/access_token"
@@ -1252,14 +1194,19 @@ def exchange_long_lived_token(short_token):
         "client_secret": settings.FACEBOOK_CLIENT_SECRET,
         "fb_exchange_token": short_token,
     }
-    response = requests.get(url, params=params)
-    return response.json().get("access_token")
+    try:
+        r = requests.get(url, params=params, timeout=10)
+        r.raise_for_status()
+        data = r.json()
+        return data.get("access_token")
+    except Exception:
+        return None
 
 def fetch_facebook_user_data(user):
-    access_token = user.profile.facebook_token
+    access_token = getattr(user.profile, "facebook_token", None)
     if not access_token:
         return {"error": "No Facebook token found."}
-    fields = [
+    fields = ",".join([
         "id",
         "name",
         "email",
@@ -1267,16 +1214,41 @@ def fetch_facebook_user_data(user):
         "age_range",
         "gender",
         "link",
-        "friends",
         "hometown",
         "location",
-        "likes",
-        "photos",
-        "videos",
-        "posts"
-    ]
-    url = f"https://graph.facebook.com/me?fields={','.join(fields)}&access_token={access_token}"
-    resp = requests.get(url).json()
-    if "error" in resp:
-        return {"error": resp["error"].get("message", "Failed to fetch data")}
-    return resp
+        "friends.limit(0).summary(true)",
+        "likes.limit(0).summary(true)",
+        "photos.limit(0).summary(true)",
+        "videos.limit(0).summary(true)",
+        "posts.limit(0).summary(true)",
+    ])
+    url = f"https://graph.facebook.com/me?fields={fields}&access_token={access_token}"
+    try:
+        r = requests.get(url, timeout=10)
+        r.raise_for_status()
+        data = r.json()
+        if "error" in data:
+            return {"error": data["error"].get("message", "Failed to fetch data")}
+        def summary_count(obj, default=0):
+            try:
+                return obj.get("summary", {}).get("total_count", default)
+            except Exception:
+                return default
+        return {
+            "id": data.get("id"),
+            "name": data.get("name"),
+            "email": data.get("email"),
+            "birthday": data.get("birthday"),
+            "age_range": data.get("age_range"),
+            "gender": data.get("gender"),
+            "link": data.get("link"),
+            "hometown": (data.get("hometown") or {}).get("name"),
+            "location": (data.get("location") or {}).get("name"),
+            "friends_count": summary_count(data.get("friends", {}), None),
+            "likes_count": summary_count(data.get("likes", {}), None),
+            "photos_count": summary_count(data.get("photos", {}), None),
+            "videos_count": summary_count(data.get("videos", {}), None),
+            "posts_count": summary_count(data.get("posts", {}), None),
+        }
+    except Exception as e:
+        return {"error": str(e)}
