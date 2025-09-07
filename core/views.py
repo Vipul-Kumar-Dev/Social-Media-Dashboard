@@ -187,10 +187,9 @@ def dashboard(request):
         except Exception as e:
             snapchat_data = {"error": str(e)}
 
-    if profile.facebook_token:
-        facebook_data = fetch_facebook_user_data(request.user)
-    else:
-        facebook_data = None
+    facebook_data = None
+    if request.user.profile.facebook_token:
+        facebook_data = get_facebook_data(request.user)
 
     return render(request, 'dashboard.html', {
         'linkedin_data': linkedin_data,
@@ -1130,82 +1129,135 @@ def fetch_snapchat_account_data(user):
         "bitmoji_background_id": user_data.get("bitmoji", {}).get("backgroundId", ""),
     }
     return dashboard_data
+# @login_required
+# def facebook_auth_start(request):
+#     params = {
+#         "client_id": settings.FACEBOOK_CLIENT_ID,
+#         "redirect_uri": settings.FACEBOOK_REDIRECT_URI,
+#         "scope": ",".join([
+#             "email",
+#             "public_profile",
+#             "user_hometown",
+#             "user_birthday",
+#             "user_age_range",
+#             "user_gender",
+#             "user_link",
+#             "user_friends",
+#             "user_location",
+#             "user_likes",
+#             "user_photos",
+#             "user_videos",
+#             "user_posts"
+#         ]),
+#         "response_type": "code",
+#         "auth_type": "rerequest",
+#     }
+#     auth_url = "https://www.facebook.com/v18.0/dialog/oauth"
+#     return redirect(f"{auth_url}?{urllib.parse.urlencode(params)}")
+
+# @login_required
+# def facebook_callback(request):
+#     code = request.GET.get("code")
+#     if not code:
+#         messages.error(request, "No authorization code received.")
+#         return redirect("dashboard")
+#     token_url = "https://graph.facebook.com/v18.0/oauth/access_token"
+#     params = {
+#         "client_id": settings.FACEBOOK_CLIENT_ID,
+#         "redirect_uri": settings.FACEBOOK_REDIRECT_URI,
+#         "client_secret": settings.FACEBOOK_CLIENT_SECRET,
+#         "code": code,
+#     }
+#     try:
+#         r = requests.get(token_url, params=params, timeout=10)
+#         r.raise_for_status()
+#         data = r.json()
+#         short_token = data.get("access_token")
+#         if not short_token:
+#             messages.error(request, f"Token Error: {data}")
+#             return redirect("dashboard")
+#         long_token = exchange_long_lived_token(short_token) or short_token
+#         profile = request.user.profile
+#         profile.facebook_token = long_token
+#         profile.save()
+#         messages.success(request, "Facebook/Instagram account linked successfully!")
+#     except Exception as e:
+#         messages.error(request, f"Error obtaining token: {e}")
+#     return redirect("dashboard")
+
+# def exchange_long_lived_token(short_token):
+#     url = "https://graph.facebook.com/v18.0/oauth/access_token"
+#     params = {
+#         "grant_type": "fb_exchange_token",
+#         "client_id": settings.FACEBOOK_CLIENT_ID,
+#         "client_secret": settings.FACEBOOK_CLIENT_SECRET,
+#         "fb_exchange_token": short_token,
+#     }
+#     try:
+#         r = requests.get(url, params=params, timeout=10)
+#         r.raise_for_status()
+#         data = r.json()
+#         return data.get("access_token")
+#     except Exception:
+#         return None
+
+# def fetch_facebook_user_data(user):
+#     access_token = getattr(user.profile, "facebook_token", None)
+#     if not access_token:
+#         return {"error": "No Facebook token found."}
+#     fields = ",".join([
+#         "id",
+#         "name",
+#         "email",
+#         "birthday",
+#         "age_range",
+#         "gender",
+#         "link",
+#         "hometown",
+#         "location",
+#         "friends.limit(0).summary(true)",
+#         "likes.limit(0).summary(true)",
+#         "photos.limit(0).summary(true)",
+#         "videos.limit(0).summary(true)",
+#         "posts.limit(0).summary(true)",
+#     ])
+#     url = f"https://graph.facebook.com/me?fields={fields}&access_token={access_token}"
+#     try:
+#         r = requests.get(url, timeout=10)
+#         r.raise_for_status()
+#         data = r.json()
+#         if "error" in data:
+#             return {"error": data["error"].get("message", "Failed to fetch data")}
+#         def summary_count(obj, default=0):
+#             try:
+#                 return obj.get("summary", {}).get("total_count", default)
+#             except Exception:
+#                 return default
+#         return {
+#             "id": data.get("id"),
+#             "name": data.get("name"),
+#             "email": data.get("email"),
+#             "birthday": data.get("birthday"),
+#             "age_range": data.get("age_range"),
+#             "gender": data.get("gender"),
+#             "link": data.get("link"),
+#             "hometown": (data.get("hometown") or {}).get("name"),
+#             "location": (data.get("location") or {}).get("name"),
+#             "friends_count": summary_count(data.get("friends", {}), None),
+#             "likes_count": summary_count(data.get("likes", {}), None),
+#             "photos_count": summary_count(data.get("photos", {}), None),
+#             "videos_count": summary_count(data.get("videos", {}), None),
+#             "posts_count": summary_count(data.get("posts", {}), None),
+#         }
+#     except Exception as e:
+#         return {"error": str(e)}
+    
 @login_required
-def facebook_auth_start(request):
-    params = {
-        "client_id": settings.FACEBOOK_CLIENT_ID,
-        "redirect_uri": settings.FACEBOOK_REDIRECT_URI,
-        "scope": ",".join([
-            "email",
-            "public_profile",
-            "user_hometown",
-            "user_birthday",
-            "user_age_range",
-            "user_gender",
-            "user_link",
-            "user_friends",
-            "user_location",
-            "user_likes",
-            "user_photos",
-            "user_videos",
-            "user_posts"
-        ]),
-        "response_type": "code",
-        "auth_type": "rerequest",
-    }
-    auth_url = "https://www.facebook.com/v18.0/dialog/oauth"
-    return redirect(f"{auth_url}?{urllib.parse.urlencode(params)}")
-
-@login_required
-def facebook_callback(request):
-    code = request.GET.get("code")
-    if not code:
-        messages.error(request, "No authorization code received.")
-        return redirect("dashboard")
-    token_url = "https://graph.facebook.com/v18.0/oauth/access_token"
-    params = {
-        "client_id": settings.FACEBOOK_CLIENT_ID,
-        "redirect_uri": settings.FACEBOOK_REDIRECT_URI,
-        "client_secret": settings.FACEBOOK_CLIENT_SECRET,
-        "code": code,
-    }
-    try:
-        r = requests.get(token_url, params=params, timeout=10)
-        r.raise_for_status()
-        data = r.json()
-        short_token = data.get("access_token")
-        if not short_token:
-            messages.error(request, f"Token Error: {data}")
-            return redirect("dashboard")
-        long_token = exchange_long_lived_token(short_token) or short_token
-        profile = request.user.profile
-        profile.facebook_token = long_token
-        profile.save()
-        messages.success(request, "Facebook/Instagram account linked successfully!")
-    except Exception as e:
-        messages.error(request, f"Error obtaining token: {e}")
-    return redirect("dashboard")
-
-def exchange_long_lived_token(short_token):
-    url = "https://graph.facebook.com/v18.0/oauth/access_token"
-    params = {
-        "grant_type": "fb_exchange_token",
-        "client_id": settings.FACEBOOK_CLIENT_ID,
-        "client_secret": settings.FACEBOOK_CLIENT_SECRET,
-        "fb_exchange_token": short_token,
-    }
-    try:
-        r = requests.get(url, params=params, timeout=10)
-        r.raise_for_status()
-        data = r.json()
-        return data.get("access_token")
-    except Exception:
-        return None
-
-def fetch_facebook_user_data(user):
+def get_facebook_data(user):
     access_token = getattr(user.profile, "facebook_token", None)
     if not access_token:
         return {"error": "No Facebook token found."}
+
     fields = ",".join([
         "id",
         "name",
@@ -1222,18 +1274,20 @@ def fetch_facebook_user_data(user):
         "videos.limit(0).summary(true)",
         "posts.limit(0).summary(true)",
     ])
+
     url = f"https://graph.facebook.com/me?fields={fields}&access_token={access_token}"
+
     try:
         r = requests.get(url, timeout=10)
         r.raise_for_status()
         data = r.json()
+
         if "error" in data:
             return {"error": data["error"].get("message", "Failed to fetch data")}
+
         def summary_count(obj, default=0):
-            try:
-                return obj.get("summary", {}).get("total_count", default)
-            except Exception:
-                return default
+            return obj.get("summary", {}).get("total_count", default) if obj else default
+
         return {
             "id": data.get("id"),
             "name": data.get("name"),
@@ -1244,11 +1298,20 @@ def fetch_facebook_user_data(user):
             "link": data.get("link"),
             "hometown": (data.get("hometown") or {}).get("name"),
             "location": (data.get("location") or {}).get("name"),
-            "friends_count": summary_count(data.get("friends", {}), None),
-            "likes_count": summary_count(data.get("likes", {}), None),
-            "photos_count": summary_count(data.get("photos", {}), None),
-            "videos_count": summary_count(data.get("videos", {}), None),
-            "posts_count": summary_count(data.get("posts", {}), None),
+            "friends_count": summary_count(data.get("friends")),
+            "likes_count": summary_count(data.get("likes")),
+            "photos_count": summary_count(data.get("photos")),
+            "videos_count": summary_count(data.get("videos")),
+            "posts_count": summary_count(data.get("posts")),
         }
+
     except Exception as e:
         return {"error": str(e)}
+
+@login_required
+def set_demo_facebook_token(request):
+    profile = request.user.profile
+    profile.facebook_token = "EAAUAIIuU4YABPa1seLKnshWSpedcLo3NhBTIESnQK6DLFOCiRGFTZB4AS0H7HQHuZCAgs1ZCOvvyLI4JgUXqCuSFy3ZBCfcLlziem5WgP5GKTD4SVvD7SvrsYZAk9sjZBhDNZB3m4z3jY4oSNHnjhsBvHOUVElNbOWKwKx28V8yAZBz8hGmmnBQ1KRUZA8zDSfZB87A6qA6qo3QuXrp0lJMr5ZAS39a9oj6ZAbOLYAZAWatv1g2ZCBI6VUPl2ZCuaF6R19QAtijTk1Ap8nPTqGCRZAQbUv4IuOyEXQZDZD"
+    profile.save()
+    messages.success(request, "Demo Facebook token has been set!")
+    return redirect("dashboard")

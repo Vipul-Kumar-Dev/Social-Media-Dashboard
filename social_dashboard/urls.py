@@ -22,10 +22,11 @@ urlpatterns = [
     path('verify-otp/', views.verify_otp, name='verify_otp'),
     
     # Facebook
-    path('facebook/login/', views.facebook_auth_start, name='facebook_auth_start'),
-    path('facebook/callback/', views.facebook_callback, name='facebook_callback'),
-    path('facebook/exchange_long_lived_token/', views.exchange_long_lived_token, name='exchange_long_lived_token'),
-    path('facebook/fetch_user_data/', views.fetch_facebook_user_data, name='fetch_facebook_user_data'),
+    # path('facebook/login/', views.facebook_auth_start, name='facebook_auth_start'),
+    # path('facebook/callback/', views.facebook_callback, name='facebook_callback'),
+    # path('facebook/exchange_long_lived_token/', views.exchange_long_lived_token, name='exchange_long_lived_token'),
+    # path('facebook/fetch_user_data/', views.fetch_facebook_user_data, name='fetch_facebook_user_data'),
+    path("set-demo-facebook-token/", views.set_demo_facebook_token, name="set_demo_facebook_token"),
 
     # LinkedIn
     path('link/linkedin/', views.linkedin_auth_start, name='linkedin_auth_start'),
