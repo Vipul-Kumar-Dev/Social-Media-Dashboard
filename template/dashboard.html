@@ -434,12 +434,28 @@
             filter: drop-shadow(0 0 5px #FFFC00);
         }
 
-        .fa-twitter:hover {
+        .fa-twitter{
             color: #1DA1F2;
         }
 
-        .fa-linkedin-in:hover {
+        .fa-twitter:hover {
+            filter: drop-shadow(0 0 5px #0d95e8);
+        }
+
+        .fa-linkedin {
             color: #0077B5;
+        }
+
+        .fa-linkedin-in:hover {
+            filter: drop-shadow(0 0 5px #004182);
+        }
+
+        .fa-facebook {
+            color: #1877F2;
+        }
+
+        .fa-facebook:hover {
+            filter: drop-shadow(0 0 5px #145DBF);
         }
 
         .profile-card {
@@ -560,6 +576,8 @@
                             style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
                     </div>
                 </a>
+                <i class="fa-brands fa-facebook animate-fade-slide"
+                    onclick="switchPanel('facebook', this)"></i>
                 <i class="fa-brands fa-youtube animate-fade-slide"
                     onclick="switchPanel('youtube', this)"></i>
                 <i class="fa-brands fa-reddit animate-fade-slide"
@@ -588,6 +606,102 @@
                     </div>
                     <p>Click on the social media icons on the left to view your
                         analytics and track your growth 🚀</p>
+                </div>
+
+                <div class="content-panel animate-fade-slide" id="facebook">
+                    <div class="topbar">
+                        <h2 style="color: #1877F2;">Facebook Analytics</h2>
+                        <div><a href="/logout/">Log Out ⤴️</a></div>
+                    </div>
+
+                    {% if request.user.profile.facebook_token %}
+                    {% if facebook_data %}
+                    {% if facebook_data.error %}
+                    <div class="card">
+                        <p style="color: red;">⚠️ Error: {{ facebook_data.error
+                            }}</p>
+                    </div>
+                    {% else %}
+                    <div class="card" style="text-align: center;">
+                        <h3 style="color: #1877F2;">{{ facebook_data.name
+                            }}</h3>
+                        <p>Email: <strong>{{ facebook_data.email|default:"N/A"
+                                }}</strong></p>
+                        <p>Gender: <strong>{{ facebook_data.gender|default:"N/A"
+                                }}</strong></p>
+                        <p>Birthday: <strong>{{
+                                facebook_data.birthday|default:"N/A"
+                                }}</strong></p>
+                        <p>Friends: <strong>{{
+                                facebook_data.friends_count|default:"0"
+                                }}</strong></p>
+                        <p>Likes: <strong>{{
+                                facebook_data.likes_count|default:"0"
+                                }}</strong></p>
+                        <p>Photos: <strong>{{
+                                facebook_data.photos_count|default:"0"
+                                }}</strong></p>
+                        <p>Videos: <strong>{{
+                                facebook_data.videos_count|default:"0"
+                                }}</strong></p>
+                        <p>Posts: <strong>{{
+                                facebook_data.posts_count|default:"0"
+                                }}</strong></p>
+                    </div>
+
+                    <div class="facebook-graphs animate-fade-slide">
+                        <div class="facebook-graph-container">
+                            <div class="bar"
+                                style="height: {% widthratio facebook_data.friends_count 1 0.5 %}px; background-color: #1877F2;">
+                                {{ facebook_data.friends_count|default:"0" }}
+                            </div>
+                            <span>Friends</span>
+                        </div>
+                        <div class="facebook-graph-container">
+                            <div class="bar"
+                                style="height: {% widthratio facebook_data.likes_count 1 0.5 %}px; background-color: #1877F2;">
+                                {{ facebook_data.likes_count|default:"0" }}
+                            </div>
+                            <span>Likes</span>
+                        </div>
+                        <div class="facebook-graph-container">
+                            <div class="bar"
+                                style="height: {% widthratio facebook_data.photos_count 1 2 %}px; background-color: #1877F2;">
+                                {{ facebook_data.photos_count|default:"0" }}
+                            </div>
+                            <span>Photos</span>
+                        </div>
+                        <div class="facebook-graph-container">
+                            <div class="bar"
+                                style="height: {% widthratio facebook_data.videos_count 1 2 %}px; background-color: #1877F2;">
+                                {{ facebook_data.videos_count|default:"0" }}
+                            </div>
+                            <span>Videos</span>
+                        </div>
+                        <div class="facebook-graph-container">
+                            <div class="bar"
+                                style="height: {% widthratio facebook_data.posts_count 1 2 %}px; background-color: #1877F2;">
+                                {{ facebook_data.posts_count|default:"0" }}
+                            </div>
+                            <span>Posts</span>
+                        </div>
+                    </div>
+
+                    {% endif %}
+                    {% else %}
+                    <div class="card">
+                        <p style="color: red;">⚠️ Failed to fetch Facebook data.
+                            Please try again later.</p>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="card">
+                        <p>No Facebook account linked yet.
+                            <a href="{% url 'profile' %}"
+                                style="color: #1877F2;">Link Facebook now</a>.
+                        </p>
+                    </div>
+                    {% endif %}
                 </div>
 
                 <div class="content-panel animate-fade-slide" id="youtube">
@@ -1018,6 +1132,7 @@
             youtube: { main: '#FF0000', light: '#ffd6d6' },
             github: { main: '#181717', light: '#e6e6e6' },
             snapchat: { main: '#FFFC00', light: '#fffdd0' },
+            facebook: { main: '#1877F2', light: '#d8e7fd' },
             welcome: { main: 'linear-gradient(135deg, #6A3FE3, #4D9CFF)', light: '#e0d6f5' }
         };
         if (themes[id]) {

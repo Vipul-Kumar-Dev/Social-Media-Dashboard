@@ -27,6 +27,19 @@ class Profile(models.Model):
     youtube_views = models.PositiveIntegerField(blank=True, null=True)
     youtube_videos = models.PositiveIntegerField(blank=True, null=True)
     youtube_token_updated_at = models.DateTimeField(blank=True, null=True)
+    facebook_token = models.CharField(max_length=512, blank=True, null=True)
+    fb_email = models.EmailField(blank=True, null=True)
+    fb_birthday = models.CharField(max_length=50, blank=True, null=True)
+    fb_age_range = models.CharField(max_length=50, blank=True, null=True)
+    fb_gender = models.CharField(max_length=20, blank=True, null=True)
+    fb_link = models.URLField(blank=True, null=True)
+    fb_friends = models.PositiveIntegerField(blank=True, null=True)
+    fb_hometown = models.CharField(max_length=255, blank=True, null=True)
+    fb_location = models.CharField(max_length=255, blank=True, null=True)
+    fb_likes = models.PositiveIntegerField(blank=True, null=True)
+    fb_photos = models.PositiveIntegerField(blank=True, null=True)
+    fb_videos = models.PositiveIntegerField(blank=True, null=True)
+    fb_posts = models.PositiveIntegerField(blank=True, null=True)
     otp_code = models.CharField(max_length=10, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
     otp_temp_phone = models.CharField(max_length=15, blank=True, null=True)
@@ -55,12 +68,16 @@ class Profile(models.Model):
     def is_youtube_linked(self):
         return bool(self.youtube_token and self.youtube_refresh_token)
 
+    def is_facebook_linked(self):
+        return bool(self.facebook_token)
+
     def all_socials_linked(self):
         return all([
             self.is_linkedin_linked(),
             self.is_twitter_linked(),
             self.is_reddit_linked(),
-            self.is_youtube_linked()
+            self.is_youtube_linked(),
+            self.is_facebook_linked()
         ])
 
 @receiver(post_save, sender=User)

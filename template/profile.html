@@ -2,13 +2,14 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="{% static 'Logo.png' %}">
-  <title>Profile Page</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-  <style>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="{% static 'Logo.png' %}">
+    <title>Profile Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
     * {
       box-sizing: border-box;
       font-family: "Segoe UI", sans-serif;
@@ -385,109 +386,122 @@
       color: inherit;
     }
   </style>
-</head>
+  </head>
 
-<body>
-  <div class="container fade-in fade-in-delayed-1">
-    <a href="/logout/" class="logout-topright">Log Out ⤴️</a>
-    {% if messages %}
-    {% for message in messages %}
-    <div class="top-message{% if message.tags %} {{ message.tags }}{% endif %}">
-      {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
-    <h2 class="fade-in fade-in-delayed-2">Manage Your Profile</h2>
-    <form method="POST" enctype="multipart/form-data" class="fade-in fade-in-delayed-3" id="profileForm">
-      {% csrf_token %}
-      <div class="form-row">
-        <div>
-          <label for="username">Username</label>
-          <input type="text" name="username" id="username" value="{{ request.user.username }}" />
-          <div id="username-status" class="check-status"></div>
-        </div>
-        <div class="profile-pic-container">
-          <label for="profile_pic">Profile Picture</label>
-          <div style="display: flex; align-items: center; gap: 20px">
-            <input type="file" name="profile_pic" id="profile_pic" accept="image/*" />
-            <div class="profile-preview">
-              <img id="profilePreviewImg"
-                src="{% if profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}{% static 'default-profile.png' %}{% endif %}"
-                alt="Profile Preview"
-                style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 2px solid #ccc;" />
+  <body>
+    <div class="container fade-in fade-in-delayed-1">
+      <a href="/logout/" class="logout-topright">Log Out ⤴️</a>
+      {% if messages %}
+      {% for message in messages %}
+      <div
+        class="top-message{% if message.tags %} {{ message.tags }}{% endif %}">
+        {{ message }}
+      </div>
+      {% endfor %}
+      {% endif %}
+      <h2 class="fade-in fade-in-delayed-2">Manage Your Profile</h2>
+      <form method="POST" enctype="multipart/form-data"
+        class="fade-in fade-in-delayed-3" id="profileForm">
+        {% csrf_token %}
+        <div class="form-row">
+          <div>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username"
+              value="{{ request.user.username }}" />
+            <div id="username-status" class="check-status"></div>
+          </div>
+          <div class="profile-pic-container">
+            <label for="profile_pic">Profile Picture</label>
+            <div style="display: flex; align-items: center; gap: 20px">
+              <input type="file" name="profile_pic" id="profile_pic"
+                accept="image/*" />
+              <div class="profile-preview">
+                <img id="profilePreviewImg"
+                  src="{% if profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}{% static 'default-profile.png' %}{% endif %}"
+                  alt="Profile Preview"
+                  style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 2px solid #ccc;" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="form-row">
-        <div>
-          <label for="email">New Email</label>
-          <div class="email-verification">
-            <input type="email" name="email" id="email" value="{{ request.user.email }}" />
-            <button type="button" class="verify-button" onclick="sendVerificationEmail()">Verify</button>
+        <div class="form-row">
+          <div>
+            <label for="email">New Email</label>
+            <div class="email-verification">
+              <input type="email" name="email" id="email"
+                value="{{ request.user.email }}" />
+              <button type="button" class="verify-button"
+                onclick="sendVerificationEmail()">Verify</button>
+            </div>
+            <p class="small-note">Click verify to receive a verification link on
+              the new email.</p>
           </div>
-          <p class="small-note">Click verify to receive a verification link on
-            the new email.</p>
-        </div>
-        <div>
-          <label for="otp_phone">Phone Number</label>
-          <div class="email-verification">
-            <input type="tel" name="otp_phone" id="otp_phone"
-              placeholder="{% if not request.user.profile.phone_number %}No number found. Please verify.{% endif %}"
-              value="{{ request.user.profile.phone_number|default:'' }}" />
-            <button type="button" class="verify-button" onclick="sendOTP()">Send OTP</button>
-          </div>
-          <p class="small-note">An OTP will be sent to your phone number.</p>
-        </div>
-      </div>
-      <div class="form-row">
-        <div>
-          <label for="otp_code">Enter OTP</label>
-          <div class="email-verification">
-            <input type="text" id="otp_code" name="otp_code" placeholder="Enter OTP" maxlength="6" disabled />
-            <button type="button" class="verify-button" onclick="verifyOTP()" id="verifyOtpBtn"
-              style="display: none">Verify OTP</button>
+          <div>
+            <label for="otp_phone">Phone Number</label>
+            <div class="email-verification">
+              <input type="tel" name="otp_phone" id="otp_phone"
+                placeholder="{% if not request.user.profile.phone_number %}No number found. Please verify.{% endif %}"
+                value="{{ request.user.profile.phone_number|default:'' }}" />
+              <button type="button" class="verify-button"
+                onclick="sendOTP()">Send OTP</button>
+            </div>
+            <p class="small-note">An OTP will be sent to your phone number.</p>
           </div>
         </div>
-        <div>
-          <label for="forgot_password">Change Password</label>
-          <div class="email-verification">
-            <a href="{% url 'password_reset' %}" class="verify-button" id="forgot_password"
-              style="text-decoration: none; display: inline-block; text-align: center;">Forgot
-              Password?</a>
+        <div class="form-row">
+          <div>
+            <label for="otp_code">Enter OTP</label>
+            <div class="email-verification">
+              <input type="text" id="otp_code" name="otp_code"
+                placeholder="Enter OTP" maxlength="6" disabled />
+              <button type="button" class="verify-button" onclick="verifyOTP()"
+                id="verifyOtpBtn"
+                style="display: none">Verify OTP</button>
+            </div>
           </div>
-          <p class="small-note">To change your password, click the button
-            above and follow the instructions.</p>
+          <div>
+            <label for="forgot_password">Change Password</label>
+            <div class="email-verification">
+              <a href="{% url 'password_reset' %}" class="verify-button"
+                id="forgot_password"
+                style="text-decoration: none; display: inline-block; text-align: center;">Forgot
+                Password?</a>
+            </div>
+            <p class="small-note">To change your password, click the button
+              above and follow the instructions.</p>
+          </div>
         </div>
-      </div>
-      <div class="social-links fade-in fade-in-delayed-4">
-        <a href="{% url 'youtube_auth_start' %}"
-          style="background: #ff0000; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
-          <i class="fab fa-youtube"></i> Link YouTube</a>
-        <a href="{% url 'reddit_auth_start' %}"
-          style="background: #ff4500; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
-          <i class="fab fa-reddit-alien"></i> Link Reddit</a>
-        <a href="{% url 'twitter_login' %}"
-          style="background: #1da1f2; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
-          <i class="fab fa-twitter"></i> Link Twitter</a>
-        <a href="{% url 'linkedin_auth_start' %}"
-          style="background: #0077b5; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
-          <i class="fab fa-linkedin-in"></i> Link LinkedIn</a>
-        <a href="{% url 'github_auth_start' %}"
-          style="background: #181717; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
-          <i class="fab fa-github"></i> Link Github</a>
-        <a href="{% url 'snapchat_auth_start' %}"
-          style="background: #FFFC00; color: black; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
-          <i class="fab fa-snapchat"></i> Link Snapchat</a>
-      </div>
-      <button type="submit" class="fade-in fade-in-delayed-4">Save
-        Changes</button>
-      <a href="/" class="back-button fade-in fade-in-delayed-4">← Back to
-        Dashboard</a>
-    </form>
-  </div>
-</body>
-<script>
+        <div class="social-links fade-in fade-in-delayed-4">
+          <a href="{% url 'facebook_auth_start' %}"
+            style="background: #1877F2; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+            <i class="fab fa-facebook"></i> Link Facebook</a>
+          <a href="{% url 'youtube_auth_start' %}"
+            style="background: #ff0000; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+            <i class="fab fa-youtube"></i> Link YouTube</a>
+          <a href="{% url 'reddit_auth_start' %}"
+            style="background: #ff4500; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+            <i class="fab fa-reddit-alien"></i> Link Reddit</a>
+          <a href="{% url 'twitter_login' %}"
+            style="background: #1da1f2; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+            <i class="fab fa-twitter"></i> Link Twitter</a>
+          <a href="{% url 'linkedin_auth_start' %}"
+            style="background: #0077b5; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+            <i class="fab fa-linkedin-in"></i> Link LinkedIn</a>
+          <a href="{% url 'github_auth_start' %}"
+            style="background: #181717; color: white; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+            <i class="fab fa-github"></i> Link Github</a>
+          <a href="{% url 'snapchat_auth_start' %}"
+            style="background: #FFFC00; color: black; padding: 10px 20px; margin: 5px; display: inline-block; border-radius: 5px;">
+            <i class="fab fa-snapchat"></i> Link Snapchat</a>
+        </div>
+        <button type="submit" class="fade-in fade-in-delayed-4">Save
+          Changes</button>
+        <a href="/" class="back-button fade-in fade-in-delayed-4">← Back to
+          Dashboard</a>
+      </form>
+    </div>
+  </body>
+  <script>
   document.addEventListener("DOMContentLoaded", () => {
     const usernameInput = document.getElementById("username");
     const usernameStatus = document.getElementById("username-status");
