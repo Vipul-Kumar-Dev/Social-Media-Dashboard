@@ -786,19 +786,13 @@
 
                     <div class="facebook-graphs animate-fade-slide"
                         style="margin-top:20px;">
-                        {% for metric, value, multiplier in [
-                        ("Friends", facebook_data.friends_count|default:0, 0.5),
-                        ("Likes", facebook_data.likes_count|default:0, 0.5),
-                        ("Photos", facebook_data.photos_count|default:0, 2),
-                        ("Videos", facebook_data.videos_count|default:0, 2),
-                        ("Posts", facebook_data.posts_count|default:0, 2)
-                        ] %}
+                        {% for item in facebook_graphs %}
                         <div class="facebook-graph-row">
-                            <div>{{ metric }}</div>
+                            <div>{{ item.metric }}</div>
                             <div class="facebook-graph-container">
                                 <div class="bar"
-                                    style="height: {{ value|floatformat:0|mul:multiplier }}px;">
-                                    {{ value }}
+                                    style="height: {{ item.height }}px;">
+                                    {{ item.value }}
                                 </div>
                             </div>
                         </div>
