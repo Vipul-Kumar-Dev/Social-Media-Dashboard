@@ -2,15 +2,13 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" type="image/png" sizes="16x16"
-            href="{% static 'Logo.png' %}?v=1">
-        <title>Social Media Dashboard</title>
-        <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-        <style>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'Logo.png' %}?v=1">
+    <title>Social Media Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', sans-serif;
@@ -434,7 +432,7 @@
             filter: drop-shadow(0 0 5px #FFFC00);
         }
 
-        .fa-twitter{
+        .fa-twitter {
             color: #1DA1F2;
         }
 
@@ -550,570 +548,573 @@
             padding: 15px;
             color: #888;
         }
+
+        .facebook-graph-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0;
+        }
+
+        .facebook-graph-row>div:first-child {
+            width: 80px;
+            font-weight: 500;
+        }
+
+        .facebook-graph-container {
+            flex: 1;
+            background: rgba(24, 119, 242, 0.08);
+            padding: 6px;
+            border-radius: 6px;
+        }
+
+        .facebook-graph-container .bar {
+            width: 100%;
+            border-radius: 6px;
+            height: 24px;
+            background: #1877F2;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            box-sizing: border-box;
+        }
     </style>
-    </head>
+</head>
 
-    <body id="body">
-        <div class="hamburger animate-fade-slide" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
+<body id="body">
+    <div class="hamburger animate-fade-slide" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <div class="flash-messages">
+        {% for message in messages %}
+        <div class="flash {{ message.tags }}">
+            {{ message }}
         </div>
+        {% endfor %}
+    </div>
 
-        <div class="flash-messages">
-            {% for message in messages %}
-            <div class="flash {{ message.tags }}">
-                {{ message }}
-            </div>
-            {% endfor %}
+    <div class="container animate-fade-slide" id="container">
+        <div class="sidebar animate-fade-slide" id="sidebar">
+            <a href="{% url 'profile' %}">
+                <div class="profile">
+                    <img src="{% if request.user.profile.profile_pic %}{{ request.user.profile.profile_pic.url }}{% else %}/static/default-profile.png{% endif %}"
+                        alt="Profile" style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
+                </div>
+            </a>
+            <i class="fa-brands fa-facebook animate-fade-slide" onclick="switchPanel('facebook', this)"></i>
+            <i class="fa-brands fa-youtube animate-fade-slide" onclick="switchPanel('youtube', this)"></i>
+            <i class="fa-brands fa-reddit animate-fade-slide" onclick="switchPanel('reddit', this)"></i>
+            <i class="fa-brands fa-twitter animate-fade-slide" onclick="switchPanel('twitter', this)"></i>
+            <i class="fa-brands fa-linkedin-in animate-fade-slide" onclick="switchPanel('linkedin', this)"></i>
+            <i class="fa-brands fa-github animate-fade-slide" onclick="switchPanel('github', this)"></i>
+            <i class="fa-brands fa-snapchat animate-fade-slide" onclick="switchPanel('snapchat', this)"></i>
+
         </div>
-
-        <div class="container animate-fade-slide" id="container">
-            <div class="sidebar animate-fade-slide" id="sidebar">
-                <a href="{% url 'profile' %}">
-                    <div class="profile">
-                        <img
-                            src="{% if request.user.profile.profile_pic %}{{ request.user.profile.profile_pic.url }}{% else %}/static/default-profile.png{% endif %}"
-                            alt="Profile"
-                            style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
-                    </div>
-                </a>
-                <i class="fa-brands fa-facebook animate-fade-slide"
-                    onclick="switchPanel('facebook', this)"></i>
-                <i class="fa-brands fa-youtube animate-fade-slide"
-                    onclick="switchPanel('youtube', this)"></i>
-                <i class="fa-brands fa-reddit animate-fade-slide"
-                    onclick="switchPanel('reddit', this)"></i>
-                <i class="fa-brands fa-twitter animate-fade-slide"
-                    onclick="switchPanel('twitter', this)"></i>
-                <i class="fa-brands fa-linkedin-in animate-fade-slide"
-                    onclick="switchPanel('linkedin', this)"></i>
-                <i class="fa-brands fa-github animate-fade-slide"
-                    onclick="switchPanel('github', this)"></i>
-                <i class="fa-brands fa-snapchat animate-fade-slide"
-                    onclick="switchPanel('snapchat', this)"></i>
-
+        <div class="main animate-fade-slide">
+            <div class="content-panel active animate-fade-slide" id="welcome">
+                <a href="/logout/" class="logout-topright">Log Out ⤴️</a>
+                <div class="topbar" style="justify-content: center;">
+                    <h2>👋 {% if request.user.first_name %}
+                        Welcome, {{ request.user.first_name }}!
+                        {% else %}
+                        Welcome, {{ request.user.username }}!
+                        {% endif %}
+                    </h2>
+                </div>
+                <p>Click on the social media icons on the left to view your
+                    analytics and track your growth 🚀</p>
             </div>
-            <div class="main animate-fade-slide">
-                <div class="content-panel active animate-fade-slide"
-                    id="welcome">
-                    <a href="/logout/" class="logout-topright">Log Out ⤴️</a>
-                    <div class="topbar" style="justify-content: center;">
-                        <h2>👋 {% if request.user.first_name %}
-                            Welcome, {{ request.user.first_name }}!
-                            {% else %}
-                            Welcome, {{ request.user.username }}!
-                            {% endif %}
-                        </h2>
-                    </div>
-                    <p>Click on the social media icons on the left to view your
-                        analytics and track your growth 🚀</p>
+
+            <div class="content-panel animate-fade-slide" id="facebook">
+                <div class="topbar">
+                    <h2 style="color: #1877F2;">Facebook Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
                 </div>
 
-                <div class="content-panel animate-fade-slide" id="facebook">
-                    <div class="topbar">
-                        <h2 style="color: #1877F2;">Facebook Analytics</h2>
-                        <div><a href="/logout/">Log Out ⤴️</a></div>
-                    </div>
+                {% if request.user.profile.facebook_token %}
+                {% if facebook_data %}
+                {% if facebook_data.error %}
+                <div class="card">
+                    <p style="color: red;">⚠️ Error: {{ facebook_data.error
+                        }}</p>
+                </div>
+                {% else %}
+                <div class="card" style="text-align: center;">
+                    <h3 style="color: #1877F2;">{{ facebook_data.name
+                        }}</h3>
+                    <p>Email: <strong>{{ facebook_data.email|default:"N/A"
+                            }}</strong></p>
+                    <p>Gender: <strong>{{ facebook_data.gender|default:"N/A"
+                            }}</strong></p>
+                    <p>Birthday: <strong>{{
+                            facebook_data.birthday|default:"N/A"
+                            }}</strong></p>
+                    <p>Friends: <strong>{{
+                            facebook_data.friends_count|default:"0"
+                            }}</strong></p>
+                    <p>Likes: <strong>{{
+                            facebook_data.likes_count|default:"0"
+                            }}</strong></p>
+                    <p>Photos: <strong>{{
+                            facebook_data.photos_count|default:"0"
+                            }}</strong></p>
+                    <p>Videos: <strong>{{
+                            facebook_data.videos_count|default:"0"
+                            }}</strong></p>
+                    <p>Posts: <strong>{{
+                            facebook_data.posts_count|default:"0"
+                            }}</strong></p>
+                </div>
 
-                    {% if request.user.profile.facebook_token %}
-                    {% if facebook_data %}
-                    {% if facebook_data.error %}
-                    <div class="card">
-                        <p style="color: red;">⚠️ Error: {{ facebook_data.error
-                            }}</p>
-                    </div>
-                    {% else %}
-                    <div class="card" style="text-align: center;">
-                        <h3 style="color: #1877F2;">{{ facebook_data.name
-                            }}</h3>
-                        <p>Email: <strong>{{ facebook_data.email|default:"N/A"
-                                }}</strong></p>
-                        <p>Gender: <strong>{{ facebook_data.gender|default:"N/A"
-                                }}</strong></p>
-                        <p>Birthday: <strong>{{
-                                facebook_data.birthday|default:"N/A"
-                                }}</strong></p>
-                        <p>Friends: <strong>{{
+                <div class="facebook-graphs animate-fade-slide" style="margin-top:20px;">
+                    <div class="facebook-graph-row">
+                        <div>Friends</div>
+                        <div class="facebook-graph-container">
+                            <div class="bar" style="height: {% widthratio facebook_data.friends_count 1 0.5 %}px;">{{
                                 facebook_data.friends_count|default:"0"
-                                }}</strong></p>
-                        <p>Likes: <strong>{{
+                                }}</div>
+                        </div>
+                    </div>
+
+                    <div class="facebook-graph-row">
+                        <div>Likes</div>
+                        <div class="facebook-graph-container">
+                            <div class="bar" style="height: {% widthratio facebook_data.likes_count 1 0.5 %}px;">{{
                                 facebook_data.likes_count|default:"0"
-                                }}</strong></p>
-                        <p>Photos: <strong>{{
+                                }}</div>
+                        </div>
+                    </div>
+
+                    <div class="facebook-graph-row">
+                        <div>Photos</div>
+                        <div class="facebook-graph-container">
+                            <div class="bar" style="height: {% widthratio facebook_data.photos_count 1 2 %}px;">{{
                                 facebook_data.photos_count|default:"0"
-                                }}</strong></p>
-                        <p>Videos: <strong>{{
+                                }}</div>
+                        </div>
+                    </div>
+
+                    <div class="facebook-graph-row">
+                        <div>Videos</div>
+                        <div class="facebook-graph-container">
+                            <div class="bar" style="height: {% widthratio facebook_data.videos_count 1 2 %}px;">{{
                                 facebook_data.videos_count|default:"0"
-                                }}</strong></p>
-                        <p>Posts: <strong>{{
+                                }}</div>
+                        </div>
+                    </div>
+
+                    <div class="facebook-graph-row">
+                        <div>Posts</div>
+                        <div class="facebook-graph-container">
+                            <div class="bar" style="height: {% widthratio facebook_data.posts_count 1 2 %}px;">{{
                                 facebook_data.posts_count|default:"0"
-                                }}</strong></p>
-                    </div>
-
-                    <div class="facebook-graphs animate-fade-slide">
-                        <div class="facebook-graph-container">
-                            <div class="bar"
-                                style="height: {% widthratio facebook_data.friends_count 1 0.5 %}px; background-color: #1877F2;">
-                                {{ facebook_data.friends_count|default:"0" }}
-                            </div>
-                            <span>Friends</span>
-                        </div>
-                        <div class="facebook-graph-container">
-                            <div class="bar"
-                                style="height: {% widthratio facebook_data.likes_count 1 0.5 %}px; background-color: #1877F2;">
-                                {{ facebook_data.likes_count|default:"0" }}
-                            </div>
-                            <span>Likes</span>
-                        </div>
-                        <div class="facebook-graph-container">
-                            <div class="bar"
-                                style="height: {% widthratio facebook_data.photos_count 1 2 %}px; background-color: #1877F2;">
-                                {{ facebook_data.photos_count|default:"0" }}
-                            </div>
-                            <span>Photos</span>
-                        </div>
-                        <div class="facebook-graph-container">
-                            <div class="bar"
-                                style="height: {% widthratio facebook_data.videos_count 1 2 %}px; background-color: #1877F2;">
-                                {{ facebook_data.videos_count|default:"0" }}
-                            </div>
-                            <span>Videos</span>
-                        </div>
-                        <div class="facebook-graph-container">
-                            <div class="bar"
-                                style="height: {% widthratio facebook_data.posts_count 1 2 %}px; background-color: #1877F2;">
-                                {{ facebook_data.posts_count|default:"0" }}
-                            </div>
-                            <span>Posts</span>
+                                }}</div>
                         </div>
                     </div>
-
-                    {% endif %}
-                    {% else %}
-                    <div class="card">
-                        <p style="color: red;">⚠️ Failed to fetch Facebook data.
-                            Please try again later.</p>
-                    </div>
-                    {% endif %}
-                    {% else %}
-                    <div class="card">
-                        <p>No Facebook account linked yet.
-                            <a href="{% url 'profile' %}"
-                                style="color: #1877F2;">Link Facebook now</a>.
-                        </p>
-                    </div>
-                    {% endif %}
                 </div>
 
-                <div class="content-panel animate-fade-slide" id="youtube">
-                    <div class="topbar">
-                        <h2 style="color: #FF0000;">YouTube Analytics</h2>
-                        <div><a href="/logout/">Log Out ⤴️</a></div>
-                    </div>
-
-                    {% if request.user.profile.youtube_token %}
-                    {% if youtube_data %}
-                    {% if youtube_data.error %}
-                    <div class="card">
-                        <p style="color: red;">⚠️ Error: {{ youtube_data.error
-                            }}</p>
-                    </div>
-                    {% else %}
-                    <div class="card" style="text-align: center;">
-                        {% if youtube_data.thumbnail %}
-                        <img src="{{ youtube_data.thumbnail }}"
-                            alt="Channel Image"
-                            style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px;">
-                        {% endif %}
-                        <h3 style="color: #FF0000;">{{
-                            youtube_data.channel_title }}</h3>
-                        <p>Subscribers: <strong>{{ youtube_data.subscriber_count
-                                }}</strong></p>
-                        <p>Total Views: <strong>{{ youtube_data.view_count
-                                }}</strong></p>
-                        <p>Videos: <strong>{{ youtube_data.video_count
-                                }}</strong></p>
-                    </div>
-
-                    <!-- YouTube Bar Graphs -->
-                    <div class="youtube-graphs animate-fade-slide">
-                        <div class="youtube-graph-container">
-                            <div class="bar"
-                                style="height: {% widthratio youtube_data.subscriber_count 1 0.5 %}px;">
-                                {{ youtube_data.subscriber_count|default:"0" }}
-                            </div>
-                        </div>
-                        <div class="youtube-graph-container">
-                            <div class="bar"
-                                style="height: {% widthratio youtube_data.view_count 1 0.03 %}px;">
-                                {{ youtube_data.view_count|default:"0" }}
-                            </div>
-                        </div>
-                        <div class="youtube-graph-container">
-                            <div class="bar"
-                                style="height: {% widthratio youtube_data.video_count 1 4 %}px;">
-                                {{ youtube_data.video_count|default:"0" }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- YouTube Graph Labels -->
-                    <div class="details animate-fade-slide"
-                        style="display: flex; justify-content: space-around; margin-top: 20px;">
-                        <div>
-                            <h4 style="color: #FF0000;">Subscribers</h4>
-                            <p>{{ youtube_data.subscriber_count|default:"0"
-                                }}</p>
-                        </div>
-                        <div>
-                            <h4 style="color: #FF0000;">Total Views</h4>
-                            <p>{{ youtube_data.view_count|default:"0" }}</p>
-                        </div>
-                        <div>
-                            <h4 style="color: #FF0000;">Videos</h4>
-                            <p>{{ youtube_data.video_count|default:"0" }}</p>
-                        </div>
-                    </div>
-
-                    <!-- YouTube Top Videos -->
-                    <div class="details animate-fade-slide"
-                        style="margin-top: 20px;">
-                        <h4 style="color: #FF0000;">Top Videos</h4>
-                        <ul>
-                            {% for video in youtube_data.top_videos %}
-                            <li>
-                                <a
-                                    href="https://www.youtube.com/watch?v={{ video.id }}"
-                                    target="_blank">{{ video.title
-                                    }}</a>
-                                – {{ video.views }} views
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
-                    {% else %}
-                    <div class="card">
-                        <p style="color: red;">⚠️ Failed to fetch YouTube data.
-                            Please try again later.</p>
-                    </div>
-                    {% endif %}
-                    {% else %}
-                    <div class="card">
-                        <p>No YouTube data linked yet.
-                            <a href="{% url 'profile' %}"
-                                style="color: #FF0000;">Link YouTube now</a>.
-                        </p>
-                    </div>
-                    {% endif %}
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p style="color: red;">⚠️ Failed to fetch Facebook data.
+                        Please try again later.</p>
                 </div>
-
-                <!-- Reddit Panel -->
-                <div class="content-panel animate-fade-slide" id="reddit">
-                    <div class="topbar">
-                        <h2 style="color: #FF4500;">Reddit Analytics</h2>
-                        <div><a href="/logout/">Log Out ⤴️</a></div>
-                    </div>
-
-                    {% if request.user.profile.is_reddit_linked %}
-                    {% if reddit_data %}
-                    {% if reddit_data.error %}
-                    <div class="card">
-                        <p style="color: red;">⚠️ Error: {{ reddit_data.error
-                            }}</p>
-                    </div>
-                    {% else %}
-                    <div class="card" style="text-align: center;">
-                        <img src="{{ reddit_data.icon_img|default:"
-                            https://www.redditstatic.com/avatars/defaults/v2/avatar_default_7.png"
-                            }}" alt="Reddit Avatar"
-                            style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px;">
-                        <h3 style="color: #FF4500;">u/{{ reddit_data.name
-                            }}</h3>
-                        <p>Verified Email: <strong>{{
-                                reddit_data.has_verified_email|yesno:"Yes,No"
-                                }}</strong></p>
-                        <p>Account Created: <strong>{{
-                                reddit_data.created_utc|date:"Y-m-d H:i"
-                                }}</strong></p>
-                    </div>
-
-                    <div class="details animate-fade-slide"
-                        style="display: flex; justify-content: space-around; margin-top: 20px; text-align: center;">
-                        <div>
-                            <h4 style="color: #FF4500;">Link Karma</h4>
-                            <p><strong>{{ reddit_data.link_karma }}</strong></p>
-                        </div>
-                        <div>
-                            <h4 style="color: #FF4500;">Comment Karma</h4>
-                            <p><strong>{{ reddit_data.comment_karma
-                                    }}</strong></p>
-                        </div>
-                        <div>
-                            <h4 style="color: #FF4500;">Total Karma</h4>
-                            <p><strong>{{ reddit_data.total_karma
-                                    }}</strong></p>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% else %}
-                    <div class="card">
-                        <p>Reddit account is linked, but data could not be
-                            fetched at this time.</p>
-                    </div>
-                    {% endif %}
-                    {% else %}
-                    <div class="card">
-                        <p>No Reddit data linked yet. <a
-                                href="{% url 'profile' %}"
-                                style="color: #FF4500;">Link
-                                Reddit now</a>.</p>
-                    </div>
-                    {% endif %}
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>No Facebook account linked yet.
+                        <a href="{% url 'facebook_auth_start' %}" style="color: #1877F2;">Link Facebook now</a>.
+                    </p>
                 </div>
-
-                <!-- Twitter panel -->
-                <div class="content-panel animate-fade-slide" id="twitter">
-                    <div class="topbar">
-                        <h2 style="color: #1DA1F2;">Twitter Analytics</h2>
-                        <div><a href="/logout/">Log Out ⤴️</a></div>
-                    </div>
-
-                    {% if twitter_error %}
-                    <div class="card"
-                        style="border: 1px solid #f00; background: #fee; padding: 15px; margin-bottom: 15px;">
-                        <p style="color: red; font-weight: bold;">
-                            {{ twitter_error }}
-                        </p>
-                    </div>
-                    {% endif %}
-
-                    {% if twitter_data %}
-                    {% if twitter_data.error %}
-                    <div class="card">
-                        <p style="color: red;">Error: {{ twitter_data.error
-                            }}</p>
-                    </div>
-                    {% else %}
-                    <div class="card" style="text-align: center;">
-                        {% if twitter_data.profile_image %}
-                        <img src="{{ twitter_data.profile_image }}"
-                            alt="Profile Image"
-                            style="width:80px; height:80px; border-radius:50%; margin-bottom:10px;">
-                        {% endif %}
-                        <h3 style="color: #1DA1F2;">@{{ twitter_data.username
-                            }}</h3>
-                        <p>Name: {{ twitter_data.name }}</p>
-                        <p>ID: {{ twitter_data.id }}</p>
-                        <p>Joined: {{ twitter_data.created_at|default:"-" }}</p>
-                    </div>
-
-                    <!-- Twitter separate bar boxes -->
-                    <div class="twitter-graphs animate-fade-slide"
-                        style="display: flex; justify-content: space-around; margin-top: 20px;">
-                        <div class="twitter-graph-container">
-                            <div class="bar"
-                                style="height: {% widthratio twitter_data.followers_count 1 0.5 %}px;">
-                                <span>{{
-                                    twitter_data.followers_count|default:"0"
-                                    }}</span>
-                            </div>
-                        </div>
-                        <div class="twitter-graph-container">
-                            <div class="bar"
-                                style="height: {% widthratio twitter_data.following_count 1 0.5 %}px;">
-                                <span>{{
-                                    twitter_data.following_count|default:"0"
-                                    }}</span>
-                            </div>
-                        </div>
-                        <div class="twitter-graph-container">
-                            <div class="bar"
-                                style="height: {% widthratio twitter_data.tweets_count 1 0.5 %}px;">
-                                <span>{{ twitter_data.tweets_count|default:"0"
-                                    }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="details animate-fade-slide"
-                        style="display: flex; justify-content: space-around; margin-top: 20px;">
-                        <div>
-                            <h4 style="color: #1DA1F2;">Followers</h4>
-                            <p>{{ twitter_data.followers_count|default:"0"
-                                }}</p>
-                        </div>
-                        <div>
-                            <h4 style="color: #1DA1F2;">Following</h4>
-                            <p>{{ twitter_data.following_count|default:"0"
-                                }}</p>
-                        </div>
-                        <div>
-                            <h4 style="color: #1DA1F2;">Tweets</h4>
-                            <p>{{ twitter_data.tweets_count|default:"0" }}</p>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% else %}
-                    <div class="card">
-                        <p>No Twitter data linked yet. <a
-                                href="{% url 'profile' %}"
-                                style="color: #1DA1F2;">Link Twitter
-                                now</a>.</p>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <div class="content-panel animate-fade-slide" id="linkedin">
-                    <div class="topbar">
-                        <h2 style="color: #0077b5;">LinkedIn Analytics</h2>
-                        <div><a href="/logout/">Log Out ⤴️</a></div>
-                    </div>
-
-                    {% if linkedin_data %}
-                    {% if linkedin_data.error %}
-                    <div class="card">
-                        <h3>Error fetching LinkedIn data</h3>
-                        <p>{{ linkedin_data.error }}</p>
-                    </div>
-                    {% else %}
-                    <div class="card animate-fade-slide">
-                        <h3 style="color: #0077b5;">Profile</h3>
-                        {% if linkedin_data.picture %}
-                        <img src="{{ linkedin_data.picture }}"
-                            alt="Profile Picture"
-                            style="width:80px; height:80px; border-radius:50%; margin-bottom:10px;">
-                        {% endif %}
-                        <p><strong>Name:</strong> {{ linkedin_data.name }}</p>
-                        <p><strong>Email:</strong> {{ linkedin_data.email }}</p>
-                        <p><strong>LinkedIn ID:</strong> {{ linkedin_data.sub
-                            }}</p>
-                    </div>
-                    {% endif %}
-                    {% else %}
-                    <div class="card animate-fade-slide">
-                        <p>No Linkedin data linked yet. <a
-                                href="{% url 'linkedin_auth_start' %}"
-                                style="color: #0077b5;">Link
-                                Linkedin now</a>.</p>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <div class="content-panel animate-fade-slide" id="github">
-                    <div class="topbar">
-                        <h2 style="color: #333;">GitHub Analytics</h2>
-                        <div><a href="/logout/">Log Out ⤴️</a></div>
-                    </div>
-
-                    {% if github_data %}
-                    {% if github_data.error %}
-                    <div class="card error-card">
-                        <p>Error: {{ github_data.error }}</p>
-                    </div>
-                    {% else %}
-                    <div class="card profile-card">
-                        {% if github_data.avatar_url %}
-                        <img src="{{ github_data.avatar_url }}" alt="Avatar"
-                            class="profile-avatar">
-                        {% endif %}
-                        <h3 class="profile-name">{{ github_data.username }}</h3>
-                        <div class="stats-row">
-                            <div class="stat-box"><strong>{{
-                                    github_data.public_repos
-                                    }}</strong><span>Repos</span></div>
-                            <div class="stat-box"><strong>{{
-                                    github_data.followers
-                                    }}</strong><span>Followers</span></div>
-                            <div class="stat-box"><strong>{{
-                                    github_data.following
-                                    }}</strong><span>Following</span></div>
-                        </div>
-                    </div>
-
-                    {% if github_data.repos %}
-                    <div class="card repo-card">
-                        <h4>Recent Repositories</h4>
-                        <ul class="repo-list">
-                            {% for r in github_data.repos|slice:":8" %}
-                            <li class="repo-item">
-                                <div class="repo-header">
-                                    <a href="{{ r.html_url }}" target="_blank"
-                                        class="repo-name">{{ r.name }}</a>
-                                    {% if r.language %}<span
-                                        class="repo-lang">{{ r.language
-                                        }}</span>{% endif %}
-                                </div>
-                                <div class="repo-meta">
-                                    ⭐ {{ r.stargazers_count }} | 🍴 {{
-                                    r.forks_count }} | Updated: {{ r.updated_at
-                                    }}
-                                </div>
-                                {% if r.description %}
-                                <p class="repo-desc">{{ r.description }}</p>
-                                {% endif %}
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
-                    {% endif %}
-                    {% else %}
-                    <div class="card empty-card">
-                        <p>No GitHub data linked yet.
-                            <a href="{% url 'profile' %}"
-                                style="color: #333;">Link GitHub now</a>.
-                        </p>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <div class="content-panel animate-fade-slide" id="snapchat">
-                    <div class="topbar">
-                        <h2 style="color: #FFFC00;">Snapchat Analytics</h2>
-                        <div><a href="/logout/">Log Out ⤴️</a></div>
-                    </div>
-
-                    {% if snapchat_data %}
-                    {% if snapchat_data.error %}
-                    <div class="card">
-                        <p style="color: red;">Error: {{ snapchat_data.error
-                            }}</p>
-                    </div>
-                    {% else %}
-                    <div class="card" style="text-align: center;">
-                        {% if snapchat_data.bitmoji_avatar %}
-                        <img src="{{ snapchat_data.bitmoji_avatar }}"
-                            alt="Bitmoji Avatar"
-                            style="width:80px;height:80px;border-radius:50%;margin-bottom:10px;">
-                        {% endif %}
-                        <h3>{{ snapchat_data.display_name }}</h3>
-                        <p>External ID: <strong>{{ snapchat_data.external_id
-                                }}</strong></p>
-                        {% if snapchat_data.bitmoji_selfie_id %}
-                        <p>Bitmoji Selfie ID: <strong>{{
-                                snapchat_data.bitmoji_selfie_id }}</strong></p>
-                        {% endif %}
-                        {% if snapchat_data.bitmoji_background_id %}
-                        <p>Bitmoji Background ID: <strong>{{
-                                snapchat_data.bitmoji_background_id
-                                }}</strong></p>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                    {% else %}
-                    <div class="card">
-                        <p>No Snapchat data linked yet.
-                            <a href="{% url 'profile' %}"
-                                style="color: #FFFC00;">Link Snapchat now</a>.
-                        </p>
-                    </div>
-                    {% endif %}
-                </div>
-
+                {% endif %}
             </div>
+
+            <div class="content-panel animate-fade-slide" id="youtube">
+                <div class="topbar">
+                    <h2 style="color: #FF0000;">YouTube Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if request.user.profile.youtube_token %}
+                {% if youtube_data %}
+                {% if youtube_data.error %}
+                <div class="card">
+                    <p style="color: red;">⚠️ Error: {{ youtube_data.error
+                        }}</p>
+                </div>
+                {% else %}
+                <div class="card" style="text-align: center;">
+                    {% if youtube_data.thumbnail %}
+                    <img src="{{ youtube_data.thumbnail }}" alt="Channel Image"
+                        style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px;">
+                    {% endif %}
+                    <h3 style="color: #FF0000;">{{
+                        youtube_data.channel_title }}</h3>
+                    <p>Subscribers: <strong>{{ youtube_data.subscriber_count
+                            }}</strong></p>
+                    <p>Total Views: <strong>{{ youtube_data.view_count
+                            }}</strong></p>
+                    <p>Videos: <strong>{{ youtube_data.video_count
+                            }}</strong></p>
+                </div>
+
+                <!-- YouTube Bar Graphs -->
+                <div class="youtube-graphs animate-fade-slide">
+                    <div class="youtube-graph-container">
+                        <div class="bar" style="height: {% widthratio youtube_data.subscriber_count 1 0.5 %}px;">
+                            {{ youtube_data.subscriber_count|default:"0" }}
+                        </div>
+                    </div>
+                    <div class="youtube-graph-container">
+                        <div class="bar" style="height: {% widthratio youtube_data.view_count 1 0.03 %}px;">
+                            {{ youtube_data.view_count|default:"0" }}
+                        </div>
+                    </div>
+                    <div class="youtube-graph-container">
+                        <div class="bar" style="height: {% widthratio youtube_data.video_count 1 4 %}px;">
+                            {{ youtube_data.video_count|default:"0" }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- YouTube Graph Labels -->
+                <div class="details animate-fade-slide"
+                    style="display: flex; justify-content: space-around; margin-top: 20px;">
+                    <div>
+                        <h4 style="color: #FF0000;">Subscribers</h4>
+                        <p>{{ youtube_data.subscriber_count|default:"0"
+                            }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #FF0000;">Total Views</h4>
+                        <p>{{ youtube_data.view_count|default:"0" }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #FF0000;">Videos</h4>
+                        <p>{{ youtube_data.video_count|default:"0" }}</p>
+                    </div>
+                </div>
+
+                <!-- YouTube Top Videos -->
+                <div class="details animate-fade-slide" style="margin-top: 20px;">
+                    <h4 style="color: #FF0000;">Top Videos</h4>
+                    <ul>
+                        {% for video in youtube_data.top_videos %}
+                        <li>
+                            <a href="https://www.youtube.com/watch?v={{ video.id }}" target="_blank">{{ video.title
+                                }}</a>
+                            – {{ video.views }} views
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p style="color: red;">⚠️ Failed to fetch YouTube data.
+                        Please try again later.</p>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>No YouTube data linked yet.
+                        <a href="{% url 'profile' %}" style="color: #FF0000;">Link YouTube now</a>.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Reddit Panel -->
+            <div class="content-panel animate-fade-slide" id="reddit">
+                <div class="topbar">
+                    <h2 style="color: #FF4500;">Reddit Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if request.user.profile.is_reddit_linked %}
+                {% if reddit_data %}
+                {% if reddit_data.error %}
+                <div class="card">
+                    <p style="color: red;">⚠️ Error: {{ reddit_data.error
+                        }}</p>
+                </div>
+                {% else %}
+                <div class="card" style="text-align: center;">
+                    <img src="{{ reddit_data.icon_img|default:"
+                        https://www.redditstatic.com/avatars/defaults/v2/avatar_default_7.png" }}" alt="Reddit Avatar"
+                        style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px;">
+                    <h3 style="color: #FF4500;">u/{{ reddit_data.name
+                        }}</h3>
+                    <p>Verified Email: <strong>{{
+                            reddit_data.has_verified_email|yesno:"Yes,No"
+                            }}</strong></p>
+                    <p>Account Created: <strong>{{
+                            reddit_data.created_utc|date:"Y-m-d H:i"
+                            }}</strong></p>
+                </div>
+
+                <div class="details animate-fade-slide"
+                    style="display: flex; justify-content: space-around; margin-top: 20px; text-align: center;">
+                    <div>
+                        <h4 style="color: #FF4500;">Link Karma</h4>
+                        <p><strong>{{ reddit_data.link_karma }}</strong></p>
+                    </div>
+                    <div>
+                        <h4 style="color: #FF4500;">Comment Karma</h4>
+                        <p><strong>{{ reddit_data.comment_karma
+                                }}</strong></p>
+                    </div>
+                    <div>
+                        <h4 style="color: #FF4500;">Total Karma</h4>
+                        <p><strong>{{ reddit_data.total_karma
+                                }}</strong></p>
+                    </div>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>Reddit account is linked, but data could not be
+                        fetched at this time.</p>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>No Reddit data linked yet. <a href="{% url 'profile' %}" style="color: #FF4500;">Link
+                            Reddit now</a>.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Twitter panel -->
+            <div class="content-panel animate-fade-slide" id="twitter">
+                <div class="topbar">
+                    <h2 style="color: #1DA1F2;">Twitter Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if twitter_error %}
+                <div class="card" style="border: 1px solid #f00; background: #fee; padding: 15px; margin-bottom: 15px;">
+                    <p style="color: red; font-weight: bold;">
+                        {{ twitter_error }}
+                    </p>
+                </div>
+                {% endif %}
+
+                {% if twitter_data %}
+                {% if twitter_data.error %}
+                <div class="card">
+                    <p style="color: red;">Error: {{ twitter_data.error
+                        }}</p>
+                </div>
+                {% else %}
+                <div class="card" style="text-align: center;">
+                    {% if twitter_data.profile_image %}
+                    <img src="{{ twitter_data.profile_image }}" alt="Profile Image"
+                        style="width:80px; height:80px; border-radius:50%; margin-bottom:10px;">
+                    {% endif %}
+                    <h3 style="color: #1DA1F2;">@{{ twitter_data.username
+                        }}</h3>
+                    <p>Name: {{ twitter_data.name }}</p>
+                    <p>ID: {{ twitter_data.id }}</p>
+                    <p>Joined: {{ twitter_data.created_at|default:"-" }}</p>
+                </div>
+
+                <!-- Twitter separate bar boxes -->
+                <div class="twitter-graphs animate-fade-slide"
+                    style="display: flex; justify-content: space-around; margin-top: 20px;">
+                    <div class="twitter-graph-container">
+                        <div class="bar" style="height: {% widthratio twitter_data.followers_count 1 0.5 %}px;">
+                            <span>{{
+                                twitter_data.followers_count|default:"0"
+                                }}</span>
+                        </div>
+                    </div>
+                    <div class="twitter-graph-container">
+                        <div class="bar" style="height: {% widthratio twitter_data.following_count 1 0.5 %}px;">
+                            <span>{{
+                                twitter_data.following_count|default:"0"
+                                }}</span>
+                        </div>
+                    </div>
+                    <div class="twitter-graph-container">
+                        <div class="bar" style="height: {% widthratio twitter_data.tweets_count 1 0.5 %}px;">
+                            <span>{{ twitter_data.tweets_count|default:"0"
+                                }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details animate-fade-slide"
+                    style="display: flex; justify-content: space-around; margin-top: 20px;">
+                    <div>
+                        <h4 style="color: #1DA1F2;">Followers</h4>
+                        <p>{{ twitter_data.followers_count|default:"0"
+                            }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #1DA1F2;">Following</h4>
+                        <p>{{ twitter_data.following_count|default:"0"
+                            }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #1DA1F2;">Tweets</h4>
+                        <p>{{ twitter_data.tweets_count|default:"0" }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>No Twitter data linked yet. <a href="{% url 'profile' %}" style="color: #1DA1F2;">Link Twitter
+                            now</a>.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="content-panel animate-fade-slide" id="linkedin">
+                <div class="topbar">
+                    <h2 style="color: #0077b5;">LinkedIn Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if linkedin_data %}
+                {% if linkedin_data.error %}
+                <div class="card">
+                    <h3>Error fetching LinkedIn data</h3>
+                    <p>{{ linkedin_data.error }}</p>
+                </div>
+                {% else %}
+                <div class="card animate-fade-slide">
+                    <h3 style="color: #0077b5;">Profile</h3>
+                    {% if linkedin_data.picture %}
+                    <img src="{{ linkedin_data.picture }}" alt="Profile Picture"
+                        style="width:80px; height:80px; border-radius:50%; margin-bottom:10px;">
+                    {% endif %}
+                    <p><strong>Name:</strong> {{ linkedin_data.name }}</p>
+                    <p><strong>Email:</strong> {{ linkedin_data.email }}</p>
+                    <p><strong>LinkedIn ID:</strong> {{ linkedin_data.sub
+                        }}</p>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card animate-fade-slide">
+                    <p>No Linkedin data linked yet. <a href="{% url 'linkedin_auth_start' %}"
+                            style="color: #0077b5;">Link
+                            Linkedin now</a>.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="content-panel animate-fade-slide" id="github">
+                <div class="topbar">
+                    <h2 style="color: #333;">GitHub Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if github_data %}
+                {% if github_data.error %}
+                <div class="card error-card">
+                    <p>Error: {{ github_data.error }}</p>
+                </div>
+                {% else %}
+                <div class="card profile-card">
+                    {% if github_data.avatar_url %}
+                    <img src="{{ github_data.avatar_url }}" alt="Avatar" class="profile-avatar">
+                    {% endif %}
+                    <h3 class="profile-name">{{ github_data.username }}</h3>
+                    <div class="stats-row">
+                        <div class="stat-box"><strong>{{
+                                github_data.public_repos
+                                }}</strong><span>Repos</span></div>
+                        <div class="stat-box"><strong>{{
+                                github_data.followers
+                                }}</strong><span>Followers</span></div>
+                        <div class="stat-box"><strong>{{
+                                github_data.following
+                                }}</strong><span>Following</span></div>
+                    </div>
+                </div>
+
+                {% if github_data.repos %}
+                <div class="card repo-card">
+                    <h4>Recent Repositories</h4>
+                    <ul class="repo-list">
+                        {% for r in github_data.repos|slice:":8" %}
+                        <li class="repo-item">
+                            <div class="repo-header">
+                                <a href="{{ r.html_url }}" target="_blank" class="repo-name">{{ r.name }}</a>
+                                {% if r.language %}<span class="repo-lang">{{ r.language
+                                    }}</span>{% endif %}
+                            </div>
+                            <div class="repo-meta">
+                                ⭐ {{ r.stargazers_count }} | 🍴 {{
+                                r.forks_count }} | Updated: {{ r.updated_at
+                                }}
+                            </div>
+                            {% if r.description %}
+                            <p class="repo-desc">{{ r.description }}</p>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% endif %}
+                {% else %}
+                <div class="card empty-card">
+                    <p>No GitHub data linked yet.
+                        <a href="{% url 'profile' %}" style="color: #333;">Link GitHub now</a>.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="content-panel animate-fade-slide" id="snapchat">
+                <div class="topbar">
+                    <h2 style="color: #FFFC00;">Snapchat Analytics</h2>
+                    <div><a href="/logout/">Log Out ⤴️</a></div>
+                </div>
+
+                {% if snapchat_data %}
+                {% if snapchat_data.error %}
+                <div class="card">
+                    <p style="color: red;">Error: {{ snapchat_data.error
+                        }}</p>
+                </div>
+                {% else %}
+                <div class="card" style="text-align: center;">
+                    {% if snapchat_data.bitmoji_avatar %}
+                    <img src="{{ snapchat_data.bitmoji_avatar }}" alt="Bitmoji Avatar"
+                        style="width:80px;height:80px;border-radius:50%;margin-bottom:10px;">
+                    {% endif %}
+                    <h3>{{ snapchat_data.display_name }}</h3>
+                    <p>External ID: <strong>{{ snapchat_data.external_id
+                            }}</strong></p>
+                    {% if snapchat_data.bitmoji_selfie_id %}
+                    <p>Bitmoji Selfie ID: <strong>{{
+                            snapchat_data.bitmoji_selfie_id }}</strong></p>
+                    {% endif %}
+                    {% if snapchat_data.bitmoji_background_id %}
+                    <p>Bitmoji Background ID: <strong>{{
+                            snapchat_data.bitmoji_background_id
+                            }}</strong></p>
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="card">
+                    <p>No Snapchat data linked yet.
+                        <a href="{% url 'profile' %}" style="color: #FFFC00;">Link Snapchat now</a>.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
         </div>
-    </body>
-    <script>
+    </div>
+</body>
+<script>
     function switchPanel(id, el) {
         document.querySelectorAll('.content-panel').forEach(panel => {
             panel.classList.remove('active');
