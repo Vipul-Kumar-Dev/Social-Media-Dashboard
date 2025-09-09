@@ -204,15 +204,10 @@ def dashboard(request):
                         return default
 
             facebook_data = {
-                "id": data.get("id"),
                 "name": data.get("name"),
                 "email": data.get("email"),
-                "birthday": data.get("birthday"),
-                "age_range": data.get("age_range"),
                 "gender": data.get("gender"),
-                "link": data.get("link"),
-                "hometown": (data.get("hometown") or {}).get("name"),
-                "location": (data.get("location") or {}).get("name"),
+                "birthday": data.get("birthday"),
                 "friends_count": summary_count(data.get("friends", {})),
                 "likes_count": summary_count(data.get("likes", {})),
                 "photos_count": summary_count(data.get("photos", {})),
@@ -233,6 +228,7 @@ def dashboard(request):
     else:
         facebook_data = None
         facebook_graphs = []
+
 
     return render(request, 'dashboard.html', {
         'linkedin_data': linkedin_data,
@@ -1356,7 +1352,7 @@ def get_facebook_data(user):
 @login_required
 def set_demo_facebook_token(request):
     profile = request.user.profile
-    profile.facebook_token = "EAAUAIIuU4YABPZAGqN6lJ2RqMYZChQO7vW93nv011Jp0zzliywuHEhF8qNBrZCOPXtKz8vBzsVGJqD4yw2ojA1YYsAkYyjEfpKwYw8yEuszNYiucV8n7lfF22JPMxf5OT0xYGb11mODd33rQgRoqng2TnYRZCncOadvwJ47DADZBQPZBcd0iG3vmOJV7Dw2PFnLZBSHn4zkliRK3lkZByYpW63mdRKaymLlpmZAZAbWX3cGajNh8lrXiPJZAyGgpsZB7LkvdvyabqovOZAZChOX3WT"
+    profile.facebook_token = "EAAUAIIuU4YABPTMnSRCYc82jd1zKZASFZAWB66sUBjb4Y79QzxUT7LCWscgskRvXg7qMUXWbfIwAwIvCqvl78hcn7F0zYHlAZBdjZCSBK0rsZCP42nZAnnjNPW30bET4VlXjZBZA9ChKX0wcKrysubL2juGh3FdX8awN8gTl98nxtZB3AYUXa2pNbEC65uzvZC5RyrZC4mPFzzQtIwnE7KVBhQLL9qGd2eFWy7JMrUlaFhDo6GEBG6dfS44582IJXMFKXnV4umla9stNM7U5UvL5wZDZD"
     profile.save()
     messages.success(request, "Demo Facebook token has been set!")
     return redirect("dashboard")

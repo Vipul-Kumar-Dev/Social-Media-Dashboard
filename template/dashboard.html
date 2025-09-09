@@ -551,35 +551,45 @@
             color: #888;
         }
 
-        .facebook-graph-row {
+        .facebook-graphs {
             display: flex;
+            align-items: flex-end;
+            justify-content: space-evenly;
+            gap: 16px;
+            margin-top: 20px;
+            height: 250px;
+        }
+
+        .facebook-graph-bar {
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 12px;
-            margin: 8px 0;
+            gap: 6px;
         }
 
-        .facebook-graph-row>div:first-child {
-            width: 80px;
-            font-weight: 500;
-        }
-
-        .facebook-graph-container {
-            flex: 1;
-            background: rgba(24, 119, 242, 0.08);
-            padding: 6px;
-            border-radius: 6px;
-        }
-
-        .facebook-graph-container .bar {
-            width: 100%;
-            border-radius: 6px;
-            height: 24px;
+        .facebook-graph-bar .bar {
+            width: 40px;
             background: #1877F2;
-            color: white;
+            border-radius: 6px 6px 0 0;
+            position: relative;
             display: flex;
-            align-items: center;
-            padding-left: 10px;
-            box-sizing: border-box;
+            align-items: flex-end;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .facebook-graph-bar .bar span {
+            position: absolute;
+            top: -24px;
+            font-size: 14px;
+            color: #000;
+        }
+
+        .facebook-graph-bar label {
+            font-weight: 500;
+            margin-top: 6px;
         }
     </style>
     </head>
@@ -767,34 +777,18 @@
                         <p>Birthday: <strong>{{
                                 facebook_data.birthday|default:"N/A"
                                 }}</strong></p>
-                        <p>Friends: <strong>{{
-                                facebook_data.friends_count|default:"0"
-                                }}</strong></p>
-                        <p>Likes: <strong>{{
-                                facebook_data.likes_count|default:"0"
-                                }}</strong></p>
-                        <p>Photos: <strong>{{
-                                facebook_data.photos_count|default:"0"
-                                }}</strong></p>
-                        <p>Videos: <strong>{{
-                                facebook_data.videos_count|default:"0"
-                                }}</strong></p>
-                        <p>Posts: <strong>{{
-                                facebook_data.posts_count|default:"0"
-                                }}</strong></p>
                     </div>
 
                     <div class="facebook-graphs animate-fade-slide"
-                        style="margin-top:20px;">
+                        style="margin-top:20px; display: flex; gap: 20px; align-items: flex-end; justify-content: space-evently;">
                         {% for item in facebook_graphs %}
-                        <div class="facebook-graph-row">
-                            <div>{{ item.metric }}</div>
-                            <div class="facebook-graph-container">
-                                <div class="bar"
-                                    style="height: {{ item.height }}px;">
-                                    {{ item.value }}
-                                </div>
+                        <div style="text-align: center;">
+                            <div class="bar"
+                                style="height: {{ item.height }}px; width: 50px; background: #1877F2; display: flex; align-items: flex-end; justify-content: center; color: black; font-weight: bold; border-radius: 6px;">
+                                {{ item.value }}
                             </div>
+                            <div style="margin-top: 5px; font-weight: 500;">{{
+                                item.metric }}</div>
                         </div>
                         {% endfor %}
                     </div>
